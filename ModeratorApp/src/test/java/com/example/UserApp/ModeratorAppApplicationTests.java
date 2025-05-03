@@ -1,10 +1,10 @@
-package com.example.FinalPrpject;
+package com.example.UserApp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FinalPrpjectApplicationTests {
+class ModeratorAppApplicationTests {
 
 	@Test
 	void contextLoads() {

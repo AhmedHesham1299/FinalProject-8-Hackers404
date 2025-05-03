@@ -1,13 +1,13 @@
-package com.example.FinalPrpject;
+package com.example.NotficationApp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FinalPrpjectApplication {
+public class NotficationAppApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FinalPrpjectApplication.class, args);
+		SpringApplication.run(NotficationAppApplication.class, args);
 	}
 
 }
