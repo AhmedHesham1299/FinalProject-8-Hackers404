@@ -1,13 +1,13 @@
-package com.example.ModeratorApp;
+package com.example.FinalPrpject;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ModeratorAppApplication {
+public class FinalPrpjectApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ModeratorAppApplication.class, args);
+		SpringApplication.run(FinalPrpjectApplication.class, args);
 	}
 
 }
