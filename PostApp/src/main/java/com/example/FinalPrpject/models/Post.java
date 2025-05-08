@@ -17,7 +17,7 @@ public class Post {
     private List<String> tags;
     private LocalDateTime createdAt;
     private List<Comment> comments;
-    private int likes;      
+    private int likes;
     private int dislikes;
 
     // Public no-arg constructor for Spring Data MongoDB and general use
