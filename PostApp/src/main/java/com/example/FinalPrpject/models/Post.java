@@ -1,9 +1,12 @@
 package com.example.FinalProject.models;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+
 @Document(collection = "posts")
 public class Post {
     @Id
@@ -14,27 +17,35 @@ public class Post {
     private List<String> tags;
     private LocalDateTime createdAt;
     private List<Comment> comments;
+    private int likes;      
+    private int dislikes;
 
+    // Public no-arg constructor for Spring Data MongoDB and general use
     public Post() {
-        this.tags = new ArrayList<>(); // Initialize tags
+        this.tags = new ArrayList<>();
         this.comments = new ArrayList<>();
-        // createdAt can be set upon actual creation/save or by the builder
+        this.likes = 0;
+        this.dislikes = 0;
     }
 
+
     private Post(String title, String content, String authorId, List<String> tags,
-                 LocalDateTime createdAt, List<Comment> comments) {
+                 LocalDateTime createdAt, List<Comment> comments, int likes, int dislikes) {
         this.title = title;
         this.content = content;
         this.authorId = authorId;
-        this.tags = (tags != null) ? tags : new ArrayList<>(); // Ensure lists are initialized
+        this.tags = (tags != null) ? tags : new ArrayList<>();
         this.createdAt = createdAt;
-        this.comments = (comments != null) ? comments : new ArrayList<>(); // Ensure lists are initialized
+        this.comments = (comments != null) ? comments : new ArrayList<>();
+        this.likes = likes;
+        this.dislikes = dislikes;
     }
 
     public static PostBuilder builder(String title, String content, String authorId) {
         return new PostBuilder(title, content, authorId);
     }
 
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -91,6 +102,23 @@ public class Post {
         this.comments = comments;
     }
 
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
+    }
+
+    // Static nested PostBuilder class
     public static class PostBuilder {
         private String title;
         private String content;
@@ -98,6 +126,8 @@ public class Post {
         private List<String> tags;
         private LocalDateTime createdAt;
         private List<Comment> comments;
+        private int likes;
+        private int dislikes;
 
         public PostBuilder(String title, String content, String authorId) {
             if (title == null || title.trim().isEmpty()) {
@@ -114,6 +144,8 @@ public class Post {
             this.authorId = authorId;
             this.tags = new ArrayList<>();
             this.comments = new ArrayList<>();
+            this.likes = 0;
+            this.dislikes = 0;
         }
 
         public PostBuilder tags(List<String> tags) {
@@ -131,10 +163,27 @@ public class Post {
             return this;
         }
 
+        // NEW: Fluent setters for likes and dislikes
+        public PostBuilder likes(int likes) {
+            if (likes < 0) { // Optional: add validation
+                throw new IllegalArgumentException("Likes cannot be negative");
+            }
+            this.likes = likes;
+            return this;
+        }
+
+        public PostBuilder dislikes(int dislikes) {
+            if (dislikes < 0) { // Optional: add validation
+                throw new IllegalArgumentException("Dislikes cannot be negative");
+            }
+            this.dislikes = dislikes;
+            return this;
+        }
 
         public Post build() {
             LocalDateTime finalCreatedAt = (this.createdAt != null) ? this.createdAt : LocalDateTime.now();
-            return new Post(title, content, authorId, tags, finalCreatedAt, comments);
+            // UPDATED: Pass likes and dislikes to the Post constructor
+            return new Post(title, content, authorId, tags, finalCreatedAt, comments, likes, dislikes);
         }
     }
 }
