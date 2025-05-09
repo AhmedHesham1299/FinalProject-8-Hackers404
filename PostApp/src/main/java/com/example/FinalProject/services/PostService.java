@@ -2,11 +2,13 @@ package com.example.FinalProject.services;
 
 import com.example.FinalProject.criteria.SearchCriteria;
 import com.example.FinalProject.models.Post;
+import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.repositories.PostRepository;
 import com.example.FinalProject.events.PostEventPublisher;
 import com.example.FinalProject.events.dtos.PostEventPayload;
 import com.example.FinalProject.events.dtos.PostCreatedEvent;
 import com.example.FinalProject.events.dtos.PostUpdatedEvent;
+import com.example.FinalProject.events.dtos.PostDeletedEvent;
 import com.example.FinalProject.dtos.PostUpdateRequestDto;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -77,4 +80,50 @@ public class PostService {
     }
 
     
+    public Post addComment(String postId, String content, int likes, int dislikes) {
+        Post post = findPost(postId);
+        post.addComment(content, likes, dislikes);
+        return postRepository.save(post);
+    }
+    
+    
+    public Post addComment(String postId, Comment comment) {
+        Post post = findPost(postId);
+        post.addComment(comment);
+        return postRepository.save(post);
+    }
+    
+    
+    public Optional<Comment> findComment(String postId, String content) {
+        Post post = findPost(postId);
+        return post.findCommentByContent(content);
+    }
+    
+   
+    public List<Comment> getComments(String postId) {
+        Post post = findPost(postId);
+        return post.getComments();
+    }
+    
+   
+    
+   
+    public Post updateComment(String postId, String oldContent, Comment updatedComment) {
+        Post post = findPost(postId);
+        boolean updated = post.updateComment(oldContent, updatedComment);
+        if (updated) {
+            return postRepository.save(post);
+        }
+        return null;
+    }
+    
+   
+    public Post deleteComment(String postId, String content) {
+        Post post = findPost(postId);
+        boolean removed = post.deleteComment(content);
+        if (removed) {
+            return postRepository.save(post);
+        }
+        return null;
+    }
 }
