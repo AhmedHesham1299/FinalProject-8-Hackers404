@@ -1,3 +1,4 @@
+/*
 package com.example.FinalProject.config;
 
 import org.springframework.context.annotation.Bean;
@@ -14,4 +15,4 @@ public class RabbitMQConfig {
     public TopicExchange postEventsExchange() {
         return new TopicExchange(POST_EVENTS_EXCHANGE);
     }
-}
+}*/

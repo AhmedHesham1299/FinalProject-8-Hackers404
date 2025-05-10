@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import com.example.FinalProject.dtos.PostUpdateRequestDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,9 +27,16 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping
-    public List<Post> searchPosts(@RequestParam String query) {
-        return postService.searchPosts(query);
+    @GetMapping("/search")
+
+    public List<Post> searchPosts(
+            @RequestParam(required = false) String keywords,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = false) String authorId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        SearchCriteria criteria = new SearchCriteria(keywords, tags, authorId, startDate, endDate);
+        return postService.searchPosts(criteria);
     }
 
     @GetMapping("/{postId}")
@@ -37,13 +50,13 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public Post updatePost(@PathVariable String postId, @RequestBody Post post) {
-        return postService.updatePost(postId, post);
+    public Post updatePost(@PathVariable String postId, @RequestBody PostUpdateRequestDto updateRequest) {
+        return postService.updatePost(postId, updateRequest);
     }
 
     @DeleteMapping("/{postId}")
     public void deletePost(@PathVariable String postId) {
         postService.deletePost(postId);
     }
-    
+
 }
