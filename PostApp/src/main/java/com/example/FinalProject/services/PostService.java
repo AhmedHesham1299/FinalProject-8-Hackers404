@@ -1,6 +1,7 @@
 package com.example.FinalProject.services;
 
 import com.example.FinalProject.criteria.SearchCriteria;
+import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.repositories.PostRepository;
 import com.example.FinalProject.events.PostEventPublisher;
@@ -74,5 +75,36 @@ public class PostService {
             throw new RuntimeException("Post not found with id: " + postId);
         }
         postRepository.deleteById(postId);
+    }
+
+    public Post addComment(String postId, Comment comment) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        post.getComments().add(comment);
+        return postRepository.save(post);
+    }
+
+    public List<Comment> getComments(String postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        return post.getComments();
+    }
+
+    public Post updateComment(String postId, int index, Comment updatedComment) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        if (index < 0 || index >= post.getComments().size())
+            throw new IllegalArgumentException("Invalid comment index");
+        post.getComments().set(index, updatedComment);
+        return postRepository.save(post);
+    }
+
+    public Post deleteComment(String postId, int index) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        if (index < 0 || index >= post.getComments().size())
+            throw new IllegalArgumentException("Invalid comment index");
+        post.getComments().remove(index);
+        return postRepository.save(post);
     }
 }

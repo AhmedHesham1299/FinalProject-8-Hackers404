@@ -1,6 +1,7 @@
 package com.example.FinalProject.controllers;
 
 import com.example.FinalProject.criteria.SearchCriteria;
+import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.services.PostService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -57,6 +58,28 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public void deletePost(@PathVariable String postId) {
         postService.deletePost(postId);
+    }
+
+    @PostMapping("/{postId}/comments")
+    public Post addComment(@PathVariable String postId, @RequestBody Comment comment) {
+        return postService.addComment(postId, comment);
+    }
+
+    @GetMapping("/{postId}/comments")
+    public List<Comment> getComments(@PathVariable String postId) {
+        return postService.getComments(postId);
+    }
+
+    @PutMapping("/{postId}/comments/{index}")
+    public Post updateComment(@PathVariable String postId,
+                                              @PathVariable int index,
+                                              @RequestBody Comment comment) {
+        return postService.updateComment(postId, index, comment);
+    }
+
+    @DeleteMapping("/{postId}/comments/{index}")
+    public Post deleteComment(@PathVariable String postId, @PathVariable int index) {
+        return postService.deleteComment(postId, index);
     }
 
 }
