@@ -1,9 +1,12 @@
 package com.example.FinalPrpject.controllers;
 
+import com.example.FinalPrpject.commands.UnBanCommand;
+import com.example.FinalPrpject.commands.WarnCommand;
 import com.example.FinalPrpject.models.BanPayload;
 import com.example.FinalPrpject.models.Moderator;
 import com.example.FinalPrpject.services.BanCommandExecutor;
-import com.example.FinalPrpject.services.ModerationService;
+import com.example.FinalPrpject.services.ModeratorService;
+import com.example.FinalPrpject.services.UserServiceClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,54 +17,56 @@ import java.util.List;
 @RequestMapping("/moderators")
 public class ModeratorController {
 
-    private final BanCommandExecutor executor;
-    private final ModerationService moderationService;
+    private final BanCommandExecutor banCommandExecutor;
+    private final ModeratorService moderatorService;
+    private final UserServiceClient userServiceClient;
 
-    public ModeratorController(BanCommandExecutor executor, ModerationService moderationService) {
-        this.executor = executor;
-        this.moderationService = moderationService;
+    public ModeratorController(BanCommandExecutor banCommandExecutor, ModeratorService moderatorService, UserServiceClient userServiceClient) {
+        this.banCommandExecutor = banCommandExecutor;
+        this.moderatorService = moderatorService;
+        this.userServiceClient = userServiceClient;
     }
 
     // Warn user
-    //
-    //
-    // To be implemented
-    //
-    //
-    //
+    @PostMapping("/warn")
+    public ResponseEntity<String> warnUser(@RequestParam Long userId, @RequestBody String message) {
+        WarnCommand warnCommand = new WarnCommand(userId, message, userServiceClient);
+        warnCommand.execute();
+        return ResponseEntity.ok("User warned successfully.");
+    }
 
     // Ban user
     @PostMapping("/ban")
-    public ResponseEntity<?> banUser(@RequestBody BanPayload payload) {
+    public ResponseEntity<String> banUser(@RequestBody BanPayload payload) {
         payload.setBanDate(LocalDateTime.now());
-        executor.executeBan(payload);
+        banCommandExecutor.executeBan(payload);
         return ResponseEntity.ok("User banned successfully.");
     }
 
-    // UnBan user
-    //
-    //
-    // To be implemented
-    //
-    //
-    //
+    // Unban user
+    @PostMapping("/unban")
+    public ResponseEntity<String> unbanUser(@RequestParam Long userId) {
+        UnBanCommand unbanCommand = new UnBanCommand(userId, userServiceClient);
+        unbanCommand.execute();
+        return ResponseEntity.ok("User unbanned successfully.");
+    }
 
     // Create moderator
     @PostMapping
     public ResponseEntity<Moderator> create(@RequestBody Moderator moderator) {
-        return ResponseEntity.ok(moderationService.createModerator(moderator));
+        return ResponseEntity.ok(moderatorService.createModerator(moderator));
     }
 
     // Get all moderators
     @GetMapping
     public ResponseEntity<List<Moderator>> getAll() {
-        return ResponseEntity.ok(moderationService.getAllModerators());
+        return ResponseEntity.ok(moderatorService.getAllModerators());
     }
 
     // Get moderator by ID
     @GetMapping("/{id}")
     public ResponseEntity<Moderator> getById(@PathVariable Long id) {
-        return moderationService.getModeratorById(id)
+        return moderatorService.getModeratorById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -69,13 +74,13 @@ public class ModeratorController {
     // Update moderator
     @PutMapping("/{id}")
     public ResponseEntity<Moderator> update(@PathVariable Long id, @RequestBody Moderator updated) {
-        return ResponseEntity.ok(moderationService.updateModerator(id, updated));
+        return ResponseEntity.ok(moderatorService.updateModerator(id, updated));
     }
 
     // Delete moderator
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        moderationService.deleteModerator(id);
+        moderatorService.deleteModerator(id);
         return ResponseEntity.noContent().build();
     }
 

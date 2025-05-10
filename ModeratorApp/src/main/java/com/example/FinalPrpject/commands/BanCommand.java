@@ -18,7 +18,7 @@ public class BanCommand {
 
     public void execute() {
         banStrategy.execute(payload);
-        userServiceClient.banUser(payload.getUserId());
+        userServiceClient.markUserAsBanned(payload.getUserId());
     }
 
 }

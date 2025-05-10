@@ -10,17 +10,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class BanCommandExecutor {
 
-    private final ApplicationContext context;
+    private final ApplicationContext applicationContext;
     private final UserServiceClient userServiceClient;
 
     @Autowired
-    public BanCommandExecutor(ApplicationContext context, UserServiceClient userServiceClient) {
-        this.context = context;
+    public BanCommandExecutor(ApplicationContext applicationContext, UserServiceClient userServiceClient) {
+        this.applicationContext = applicationContext;
         this.userServiceClient = userServiceClient;
     }
 
     public void executeBan(BanPayload payload) {
-        BanStrategy strategy = (BanStrategy) context.getBean(payload.getBanType().name());
+        BanStrategy strategy = (BanStrategy) applicationContext.getBean(payload.getBanType().name());
         BanCommand command = new BanCommand(payload, userServiceClient, strategy);
         command.execute();
     }

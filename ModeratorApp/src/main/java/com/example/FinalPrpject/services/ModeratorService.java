@@ -3,7 +3,6 @@ package com.example.FinalPrpject.services;
 import com.example.FinalPrpject.models.Moderator;
 import com.example.FinalPrpject.repositories.ModeratorRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +11,7 @@ public class ModeratorService {
 
     private final ModeratorRepository moderatorRepository;
 
-    public ModerationService(ModeratorRepository moderatorRepository) {
+    public ModeratorService(ModeratorRepository moderatorRepository) {
         this.moderatorRepository = moderatorRepository;
     }
 
