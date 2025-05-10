@@ -56,7 +56,15 @@ public class PostServiceCompleteTest {
                 LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31));
         criteriaAll = new SearchCriteria("k", Arrays.asList("t"), "a",
                 LocalDate.now().minusDays(5), LocalDate.now());
-        postService = new PostService(postRepository, null);
+        testPost = new Post();
+        testPost.setId("post123");
+        testPost.setTitle("Test Title");
+        testPost.setContent("Test Content");
+        testPost.setAuthorId("author123");
+        testPost.setCreatedAt(LocalDateTime.now());
+        testPost.setComments(new ArrayList<>(Arrays.asList(new Comment("Test comment", 0, 0))));
+        testCriteria = criteriaKeywords;
+        postService = new PostService(postRepository, eventPublisher);
     }
 
     @Test
@@ -94,7 +102,8 @@ public class PostServiceCompleteTest {
     @Test
     void updatePost_shouldUpdateExistingPostAndPublishEvent() {
         // Given
-        PostUpdateRequestDto updateRequest = new PostUpdateRequestDto("Updated Title", "Updated Content", Arrays.asList("updated", "tag"));
+        PostUpdateRequestDto updateRequest = new PostUpdateRequestDto("Updated Title", "Updated Content",
+                Arrays.asList("updated", "tag"));
         when(postRepository.findById("post123")).thenReturn(Optional.of(testPost));
         when(postRepository.save(any(Post.class))).thenReturn(testPost);
 
