@@ -1,10 +1,16 @@
 package com.example.FinalPrpject.models;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.util.*;
 
 @Entity
 @Table(name = "users")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class User {
 
     @Id
@@ -37,12 +43,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "blocked_id"))
     private Set<User> blockedUsers = new HashSet<>();
-
-    @OneToMany(mappedBy = "reporter")
-    private List<Report> reportsMade = new ArrayList<>();
-
-    @OneToMany(mappedBy = "reported")
-    private List<Report> reportsReceived = new ArrayList<>();
 
 
     public User() {}

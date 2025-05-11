@@ -1,6 +1,7 @@
 package com.example.FinalPrpject.controllers;
 
 import com.example.FinalPrpject.models.User;
+import com.example.FinalPrpject.models.UserResponse;
 import com.example.FinalPrpject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,10 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public List<UserResponse> getAllUsers() {
+        return userService.getAllUsers().stream()
+                .map(UserResponse::new)
+                .toList();
     }
 
     @PutMapping("/{id}")
@@ -40,15 +43,6 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted successfully");
     }
-
-    @PutMapping("/{id}/edit")
-    public ResponseEntity<User> editProfile(@PathVariable Long id, @RequestBody Map<String, String> updates) {
-        String username = updates.get("username");
-        String email = updates.get("email");
-        String profileImageUrl = updates.get("profileImageUrl");
-        return ResponseEntity.ok(userService.editProfile(id, username, email, profileImageUrl));
-    }
-
 
     @PostMapping("/{userId}/follow/{targetId}")
     public ResponseEntity<String> followUser(@PathVariable Long userId, @PathVariable Long targetId) {
@@ -67,6 +61,12 @@ public class UserController {
     public ResponseEntity<String> blockUser(@PathVariable Long userId, @PathVariable Long blockedUserId) {
         userService.blockUser(userId, blockedUserId);
         return ResponseEntity.ok("Blocked user " + blockedUserId);
+    }
+
+    @PostMapping("/{userId}/unblock/{blockedUserId}")
+    public ResponseEntity<String> unBlockUser(@PathVariable Long userId, @PathVariable Long blockedUserId) {
+        userService.unBlockUser(userId, blockedUserId);
+        return ResponseEntity.ok("Unblocked user " + blockedUserId);
     }
 
     @PostMapping("/{reporterId}/report/{reportedId}")
