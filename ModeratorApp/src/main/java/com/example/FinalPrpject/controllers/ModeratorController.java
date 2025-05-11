@@ -1,12 +1,12 @@
 package com.example.FinalPrpject.controllers;
 
-import com.example.FinalPrpject.commands.UnBanCommand;
+import com.example.FinalPrpject.commands.UnbanCommand;
 import com.example.FinalPrpject.commands.WarnCommand;
 import com.example.FinalPrpject.models.BanPayload;
 import com.example.FinalPrpject.models.Moderator;
 import com.example.FinalPrpject.services.BanCommandExecutor;
 import com.example.FinalPrpject.services.ModeratorService;
-import com.example.FinalPrpject.services.UserServiceClient;
+import com.example.FinalPrpject.services.UserFeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,18 +19,18 @@ public class ModeratorController {
 
     private final BanCommandExecutor banCommandExecutor;
     private final ModeratorService moderatorService;
-    private final UserServiceClient userServiceClient;
+    private final UserFeignClient userFeignClient;
 
-    public ModeratorController(BanCommandExecutor banCommandExecutor, ModeratorService moderatorService, UserServiceClient userServiceClient) {
+    public ModeratorController(BanCommandExecutor banCommandExecutor, ModeratorService moderatorService, UserFeignClient userFeignClient) {
         this.banCommandExecutor = banCommandExecutor;
         this.moderatorService = moderatorService;
-        this.userServiceClient = userServiceClient;
+        this.userFeignClient = userFeignClient;
     }
 
     // Warn user
     @PostMapping("/warn")
     public ResponseEntity<String> warnUser(@RequestParam Long userId, @RequestBody String message) {
-        WarnCommand warnCommand = new WarnCommand(userId, message, userServiceClient);
+        WarnCommand warnCommand = new WarnCommand(userId, message, userFeignClient);
         warnCommand.execute();
         return ResponseEntity.ok("User warned successfully.");
     }
@@ -46,7 +46,7 @@ public class ModeratorController {
     // Unban user
     @PostMapping("/unban")
     public ResponseEntity<String> unbanUser(@RequestParam Long userId) {
-        UnBanCommand unbanCommand = new UnBanCommand(userId, userServiceClient);
+        UnbanCommand unbanCommand = new UnbanCommand(userId, userFeignClient);
         unbanCommand.execute();
         return ResponseEntity.ok("User unbanned successfully.");
     }

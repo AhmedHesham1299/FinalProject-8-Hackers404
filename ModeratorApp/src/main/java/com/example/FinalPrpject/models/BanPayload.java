@@ -16,6 +16,25 @@ public class BanPayload {
     private LocalDateTime banDate;
     private int durationInDays;
 
+    public BanPayload() {}
+
+    public BanPayload(long userId, BanType banType, String reason, LocalDateTime banDate, int durationInDays) {
+        this.userId = userId;
+        this.banType = banType;
+        this.reason = reason;
+        this.banDate = banDate;
+        this.durationInDays = durationInDays;
+    }
+
+    public BanPayload(long id, long userId, BanType banType, String reason, LocalDateTime banDate, int durationInDays) {
+        this.id = id;
+        this.userId = userId;
+        this.banType = banType;
+        this.reason = reason;
+        this.banDate = banDate;
+        this.durationInDays = durationInDays;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
