@@ -4,6 +4,6 @@ import com.example.FinalPrpject.models.BanPayload;
 
 public interface BanStrategy {
 
-    void execute(BanPayload payload);
+    void execute(BanPayload banPayload);
 
 }

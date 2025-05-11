@@ -14,7 +14,7 @@ public class BanPayload {
     private BanType banType;
     private String reason;
     private LocalDateTime banDate;
-    private int durationInDays;
+    private int durationInDays; // if(banType==TEMPORARY)
 
     public BanPayload() {}
 

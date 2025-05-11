@@ -1,12 +1,15 @@
 package com.example.FinalPrpject.controllers;
 
+import com.example.FinalPrpject.commands.BanCommand;
 import com.example.FinalPrpject.commands.UnbanCommand;
 import com.example.FinalPrpject.commands.WarnCommand;
 import com.example.FinalPrpject.models.BanPayload;
 import com.example.FinalPrpject.models.Moderator;
-import com.example.FinalPrpject.services.BanCommandExecutor;
+import com.example.FinalPrpject.repositories.BanPayloadRepository;
 import com.example.FinalPrpject.services.ModeratorService;
 import com.example.FinalPrpject.services.UserFeignClient;
+import com.example.FinalPrpject.strategies.BanStrategy;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,14 +20,16 @@ import java.util.List;
 @RequestMapping("/moderators")
 public class ModeratorController {
 
-    private final BanCommandExecutor banCommandExecutor;
     private final ModeratorService moderatorService;
     private final UserFeignClient userFeignClient;
+    private final ApplicationContext applicationContext;
+    private final BanPayloadRepository banPayloadRepository;
 
-    public ModeratorController(BanCommandExecutor banCommandExecutor, ModeratorService moderatorService, UserFeignClient userFeignClient) {
-        this.banCommandExecutor = banCommandExecutor;
+    public ModeratorController(ModeratorService moderatorService, UserFeignClient userFeignClient, ApplicationContext applicationContext, BanPayloadRepository banPayloadRepository) {
         this.moderatorService = moderatorService;
         this.userFeignClient = userFeignClient;
+        this.applicationContext = applicationContext;
+        this.banPayloadRepository = banPayloadRepository;
     }
 
     // Warn user
@@ -37,9 +42,12 @@ public class ModeratorController {
 
     // Ban user
     @PostMapping("/ban")
-    public ResponseEntity<String> banUser(@RequestBody BanPayload payload) {
-        payload.setBanDate(LocalDateTime.now());
-        banCommandExecutor.executeBan(payload);
+    public ResponseEntity<String> banUser(@RequestBody BanPayload banPayload) {
+        banPayload.setBanDate(LocalDateTime.now());
+        BanStrategy banStrategy = (BanStrategy) applicationContext.getBean(banPayload.getBanType().name());
+        BanCommand banCommand = new BanCommand(banPayload, userFeignClient, banStrategy);
+        banCommand.execute();
+        banPayloadRepository.save(banPayload);
         return ResponseEntity.ok("User banned successfully.");
     }
 

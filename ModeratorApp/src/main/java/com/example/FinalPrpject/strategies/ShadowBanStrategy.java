@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 public class ShadowBanStrategy implements BanStrategy {
 
     @Override
-    public void execute(BanPayload payload) {
-        System.out.println("Shadow ban executed for user: " + payload.getUserId());
+    public void execute(BanPayload banPayload) {
+        System.out.println("Shadow ban executed for user: " + banPayload.getUserId());
     }
 
 }
