@@ -1,16 +1,17 @@
 package com.example.FinalPrpject.services;
 
 
-import com.example.FinalPrpject.models.Report;
+import com.example.FinalPrpject.clients.ModerationClient;
 import com.example.FinalPrpject.models.User;
-import com.example.FinalPrpject.repositories.ReportRepository;
 import com.example.FinalPrpject.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -18,7 +19,7 @@ public class UserService {
     @Autowired
     private final UserRepository userRepository;
     @Autowired
-    private ReportRepository reportRepository;
+    private ModerationClient moderationClient;
 
 
     public UserService(UserRepository userRepository) {
@@ -39,9 +40,22 @@ public class UserService {
     }
     public User updateUser(Long id, User updatedUser) {
         User user = getUserById(id);
+
+        if (!user.getUsername().equals(updatedUser.getUsername()) &&
+                userRepository.existsByUsername(updatedUser.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
+        }
+
+        if (!user.getEmail().equals(updatedUser.getEmail()) &&
+                userRepository.existsByEmail(updatedUser.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already taken");
+        }
+
         user.setUsername(updatedUser.getUsername());
         user.setEmail(updatedUser.getEmail());
-        user.setPassword(updatedUser.getPassword());
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+            user.setPassword(updatedUser.getPassword());
+        }
         return userRepository.save(user);
     }
     public void deleteUser(Long id) {
@@ -51,12 +65,6 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User editProfile(Long userId, String newUsername, String newEmail, String newProfileImageUrl) {
-        User user = getUserById(userId);
-        user.setUsername(newUsername);
-        user.setEmail(newEmail);
-        return userRepository.save(user);
-    }
     public void followUser(Long userId, Long targetId) {
         User user = getUserById(userId);
         User target = getUserById(targetId);
@@ -81,13 +89,19 @@ public class UserService {
         user.getBlockedUsers().add(blocked);
         userRepository.save(user);
     }
-    public void reportUser(Long reporterId, Long reportedId, String reason) {
-        User reporter = getUserById(reporterId);
-        User reported = getUserById(reportedId);
-
-        Report report = new Report(reporter, reported, reason);
-        reportRepository.save(report);
+    public void unBlockUser(Long userId, Long blockedUserId) {
+        User user = getUserById(userId);
+        User blocked = getUserById(blockedUserId);
+        user.getBlockedUsers().remove(blocked);
+        userRepository.save(user);
     }
+    public void reportUser(Long reporterId, Long reportedId, String reason) {
+        getUserById(reporterId);
+        getUserById(reportedId);
+        Map<String, String> body = new HashMap<>();
+        body.put("reason", reason);
 
+        moderationClient.reportUser(reporterId, reportedId, body);
+    }
 
 }
