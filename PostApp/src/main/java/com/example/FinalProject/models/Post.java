@@ -15,6 +15,9 @@ public class Post {
     private String authorId;
     private List<String> tags;
     private LocalDateTime createdAt;
+    private List<Comment> comments;
+    private int likes;
+    private int dislikes;
 
     public Post() {
     }
@@ -73,5 +76,29 @@ public class Post {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
     }
 }
