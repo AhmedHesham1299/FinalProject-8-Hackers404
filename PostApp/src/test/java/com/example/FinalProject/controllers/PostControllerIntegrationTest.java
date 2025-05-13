@@ -62,7 +62,9 @@ public class PostControllerIntegrationTest {
         testPost2.setId("post456");
 
         // Create test comment
-        testComment = new Comment("Test comment", 5, 2);
+        testComment = new Comment("Test comment", "user123", "post123");
+        testComment.setLikes(5);
+        testComment.setDislikes(2);
         testPost.setComments(Collections.singletonList(testComment));
     }
 
@@ -157,7 +159,7 @@ public class PostControllerIntegrationTest {
     @Test
     void addComment_shouldReturnUpdatedPost() throws Exception {
         // Given
-        Comment newComment = new Comment("New comment", 0, 0);
+        Comment newComment = new Comment("New comment", "user456", "post123");
         Post postWithComment = Post.builder("Test Post", "Test Content", "user123")
                 .tags(Arrays.asList("test", "unit"))
                 .createdAt(LocalDateTime.now())
@@ -194,7 +196,10 @@ public class PostControllerIntegrationTest {
     @Test
     void updateComment_shouldReturnUpdatedPost() throws Exception {
         // Given
-        Comment updatedComment = new Comment("Updated comment", 10, 3);
+        Comment updatedComment = new Comment("Updated comment", "user123", "post123");
+        updatedComment.setLikes(10);
+        updatedComment.setDislikes(3);
+        
         Post postWithUpdatedComment = Post.builder("Test Post", "Test Content", "user123")
                 .tags(Arrays.asList("test", "unit"))
                 .createdAt(LocalDateTime.now())

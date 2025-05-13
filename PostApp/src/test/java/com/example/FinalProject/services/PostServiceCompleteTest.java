@@ -62,7 +62,8 @@ public class PostServiceCompleteTest {
         testPost.setContent("Test Content");
         testPost.setAuthorId("author123");
         testPost.setCreatedAt(LocalDateTime.now());
-        testPost.setComments(new ArrayList<>(Arrays.asList(new Comment("Test comment", 0, 0))));
+        Comment comment = new Comment("Test comment", "author123", "post123");
+        testPost.setComments(new ArrayList<>(Arrays.asList(comment)));
         testCriteria = criteriaKeywords;
         postService = new PostService(postRepository, eventPublisher);
     }
@@ -192,7 +193,7 @@ public class PostServiceCompleteTest {
     @Test
     void addComment_shouldAddCommentAndSavePost() {
         // Given
-        Comment newComment = new Comment("New comment", 0, 0);
+        Comment newComment = new Comment("New comment", "author456", "post123");
         when(postRepository.findById("post123")).thenReturn(Optional.of(testPost));
         when(postRepository.save(any(Post.class))).thenReturn(testPost);
 
@@ -223,7 +224,10 @@ public class PostServiceCompleteTest {
     @Test
     void updateComment_shouldUpdateCommentAtGivenIndex() {
         // Given
-        Comment updatedComment = new Comment("Updated comment", 5, 2);
+        Comment updatedComment = new Comment("Updated comment", "author123", "post123");
+        updatedComment.setLikes(5);
+        updatedComment.setDislikes(2);
+        
         when(postRepository.findById("post123")).thenReturn(Optional.of(testPost));
         when(postRepository.save(any(Post.class))).thenReturn(testPost);
 
@@ -242,7 +246,10 @@ public class PostServiceCompleteTest {
     @Test
     void updateComment_shouldThrowExceptionForInvalidIndex() {
         // Given
-        Comment updatedComment = new Comment("Updated comment", 5, 2);
+        Comment updatedComment = new Comment("Updated comment", "author123", "post123");
+        updatedComment.setLikes(5);
+        updatedComment.setDislikes(2);
+        
         when(postRepository.findById("post123")).thenReturn(Optional.of(testPost));
 
         // When & Then
