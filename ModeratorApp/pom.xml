@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>ModeratorApp</artifactId>
+	<artifactId>FinalPrpject</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ModeratorApp</name>
-	<description>ModeratorApp project for Spring Boot</description>
+	<name>FinalPrpject</name>
+	<description>FinalPrpject project for Spring Boot</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -31,6 +31,10 @@
 		<spring-cloud.version>2024.0.1</spring-cloud.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
