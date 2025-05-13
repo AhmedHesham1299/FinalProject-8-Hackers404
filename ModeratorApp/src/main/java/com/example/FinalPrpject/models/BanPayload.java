@@ -11,7 +11,7 @@ public class BanPayload {
     private Long id;
     private Long userId;
     @Enumerated(EnumType.STRING)
-    private BanType banType;
+    private BanType banType;    // PERMANENT, SHADOW, TEMPORARY
     private String reason;
     private LocalDateTime banDate;
     private int durationInDays; // if(banType==TEMPORARY)
@@ -19,15 +19,6 @@ public class BanPayload {
     public BanPayload() {}
 
     public BanPayload(long userId, BanType banType, String reason, LocalDateTime banDate, int durationInDays) {
-        this.userId = userId;
-        this.banType = banType;
-        this.reason = reason;
-        this.banDate = banDate;
-        this.durationInDays = durationInDays;
-    }
-
-    public BanPayload(long id, long userId, BanType banType, String reason, LocalDateTime banDate, int durationInDays) {
-        this.id = id;
         this.userId = userId;
         this.banType = banType;
         this.reason = reason;
