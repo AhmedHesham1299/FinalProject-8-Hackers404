@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.*;
 public interface UserFeignClient {
 
     @PutMapping("/users/{id}/ban")
-    void banUser(@PathVariable("id") Long userId);
+    void banUser(@PathVariable("id") Long userId, @RequestHeader(value = "X-Role", required = false) String role);
 
     @PutMapping("/users/{id}/unban")
-    void unbanUser(@PathVariable("id") Long userId);
+    void unbanUser(@PathVariable("id") Long userId, @RequestHeader(value = "X-Role", required = false) String role);
 
     @PostMapping("/users/{id}/warn")
-    void warnUser(@PathVariable("id") Long userId, @RequestBody String message);
+    void warnUser(@PathVariable("id") Long userId, @RequestHeader(value = "X-Role", required = false) String role, @RequestBody String message);
 
 }
