@@ -2,10 +2,13 @@ package com.example.FinalPrpject.controllers;
 
 import com.example.FinalPrpject.models.User;
 import com.example.FinalPrpject.models.UserResponse;
+import com.example.FinalPrpject.rabbitMQ.UserProducer;
 import com.example.FinalPrpject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -15,6 +18,13 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserProducer userProducer;
+
+    public UserController(UserService userService, UserProducer userProducer) {
+        this.userService = userService;
+        this.userProducer = userProducer;
+    }
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
@@ -47,12 +57,14 @@ public class UserController {
     @PostMapping("/{userId}/follow/{targetId}")
     public ResponseEntity<String> followUser(@PathVariable Long userId, @PathVariable Long targetId) {
         userService.followUser(userId, targetId);
+        userProducer.sendNotificationEvent(userId, "followed user " + targetId);
         return ResponseEntity.ok("Followed user " + targetId);
     }
 
     @PostMapping("/{userId}/unfollow/{targetId}")
     public ResponseEntity<String> unfollowUser(@PathVariable Long userId, @PathVariable Long targetId) {
         userService.unfollowUser(userId, targetId);
+        userProducer.sendNotificationEvent(userId, "unfollowed user " + targetId);
         return ResponseEntity.ok("Unfollowed user " + targetId);
     }
 
@@ -60,12 +72,14 @@ public class UserController {
     @PostMapping("/{userId}/block/{blockedUserId}")
     public ResponseEntity<String> blockUser(@PathVariable Long userId, @PathVariable Long blockedUserId) {
         userService.blockUser(userId, blockedUserId);
+        userProducer.sendNotificationEvent(userId, "blocked user " + blockedUserId);
         return ResponseEntity.ok("Blocked user " + blockedUserId);
     }
 
     @PostMapping("/{userId}/unblock/{blockedUserId}")
     public ResponseEntity<String> unBlockUser(@PathVariable Long userId, @PathVariable Long blockedUserId) {
         userService.unBlockUser(userId, blockedUserId);
+        userProducer.sendNotificationEvent(userId, "unblocked user " + blockedUserId);
         return ResponseEntity.ok("Unblocked user " + blockedUserId);
     }
 
@@ -75,6 +89,74 @@ public class UserController {
                                              @RequestBody Map<String, String> body) {
         String reason = body.get("reason");
         userService.reportUser(reporterId, reportedId, reason);
+        userProducer.sendNotificationEvent(reporterId, "reported user " + reportedId + " for: " + reason);
         return ResponseEntity.ok("User " + reportedId + " reported for: " + reason);
     }
+
+    @PutMapping("/{id}/ban")
+    public ResponseEntity<String> banUser(@PathVariable Long id,
+                                          @RequestHeader(value = "X-Role", required = false) String role) {
+        if (role == null || role.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Please log in to perform this action.");
+        }
+
+        if (!"MODERATOR".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Access denied");
+        }
+
+        userService.banUser(id);
+        return ResponseEntity.ok("User" + " " + id + " " + "has been banned");
+    }
+    @PutMapping("/{id}/unban")
+    public ResponseEntity<String> unbanUser(@PathVariable Long id,
+                                            @RequestHeader(value = "X-Role", required = false) String role) {
+        if (role == null || role.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Please log in to perform this action.");
+        }
+
+        if (!"MODERATOR".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Access denied");
+        }
+
+        userService.unbanUser(id);
+        return ResponseEntity.ok("User" + " " + id + " " + "has been unbanned");
+    }
+
+    @PostMapping("/{id}/warn")
+    public ResponseEntity<String> warnUser(@PathVariable Long id,
+                                           @RequestHeader(value = "X-Role", required = false) String role,
+                                         @RequestBody String message) {
+        if (role == null || role.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Please log in to perform this action.");
+        }
+
+        if (!"MODERATOR".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Access denied");
+        }
+
+        userService.warnUser(id, message);
+        return ResponseEntity.ok("User" + " " + id + " " + "has been warned: " + message);
+    }
+
+    @PostMapping("/{userId}/post")
+    public ResponseEntity<String> createPost(@PathVariable Long userId, @RequestBody Map<String, String> body) {
+        String content = body.get("content");
+
+        if (content == null || content.isBlank()) {
+            return ResponseEntity.badRequest().body("Post content is required");
+        }
+
+        userService.getUserById(userId);
+
+        userProducer.createPost(userId, content);
+
+        return ResponseEntity.ok("Post request submitted successfully.");
+    }
+
 }

@@ -24,12 +24,14 @@ import java.util.Optional;
 public class AuthController {
 
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private UserService userService;
-    @Autowired private SessionRepository sessionRepository;
     @Autowired
     private SessionService sessionService;
+
+    public AuthController(SessionService sessionService, UserService userService) {
+        this.sessionService = sessionService;
+        this.userService = userService;
+    }
 
     @GetMapping("/session")
     public ResponseEntity<List<Session>> getAllSessions() {
@@ -42,7 +44,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody User user) {
-        if (userRepository.existsByUsername(user.getUsername()) || userRepository.existsByEmail(user.getEmail())) {
+        if (userService.existsByUsername(user.getUsername()) || userService.existsByEmail(user.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username or email already exists");
         }
 
@@ -57,32 +59,37 @@ public class AuthController {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
 
-        User user = userRepository.findByUsername(username)
+        User user = userService.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
+
+        if (user.isBanned()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Your account has been banned. Please contact support.");
+        }
 
         if (!Objects.equals(password, user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
-        Optional<Session> existingSessionOpt = sessionRepository.findByUserId(user.getId());
+        Optional<Session> existingSessionOpt = sessionService.findByUserId(user.getId());
         if (existingSessionOpt.isPresent()) {
             Session existingSession = existingSessionOpt.get();
             if (existingSession.getExpiresAt().isAfter(LocalDateTime.now())) {
                 return ResponseEntity.ok("Already logged in. Session ID: " + existingSession.getSessionId());
             } else {
-                sessionRepository.delete(existingSession);
+                sessionService.deleteSessionById(existingSession.getSessionId());
             }
         }
 
 
         Session session = new Session(user, Duration.ofHours(2));
-        sessionRepository.save(session);
+        sessionService.createSession(session);
 
         return ResponseEntity.ok("Login successful");
     }
 
     @PostMapping("/logout/{sessionId}")
     public ResponseEntity<String> logout(@PathVariable Long sessionId) {
-        sessionRepository.deleteById(sessionId);
+        sessionService.deleteSessionById(sessionId);
         return ResponseEntity.ok("Logged out successfully");
     }
     @PutMapping("/reset-password")
@@ -91,9 +98,10 @@ public class AuthController {
         String oldPassword = body.get("oldPassword");
         String newPassword = body.get("newPassword");
 
-        Session session = sessionRepository.findBySessionId(sessionId)
-                .filter(s -> s.getExpiresAt().isAfter(LocalDateTime.now()))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session invalid or expired"));
+        Session session = sessionService.getSessionById(sessionId);
+        if (session.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session invalid or expired");
+        }
 
         User user = session.getUser();
 
@@ -102,7 +110,7 @@ public class AuthController {
         }
 
         user.setPassword(newPassword);
-        userRepository.save(user);
+        userService.createUser(user);
 
         return ResponseEntity.ok("Password updated successfully");
     }
