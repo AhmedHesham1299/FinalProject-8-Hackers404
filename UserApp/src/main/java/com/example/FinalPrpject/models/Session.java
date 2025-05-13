@@ -17,6 +17,8 @@ public class Session {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private String role;
+
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
 
@@ -43,6 +45,13 @@ public class Session {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {

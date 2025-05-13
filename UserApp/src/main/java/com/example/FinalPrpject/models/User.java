@@ -26,6 +26,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private boolean isBanned;
+
+    @ElementCollection
+    private List<String> warnings = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(name = "user_followers",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -103,18 +109,38 @@ public class User {
         this.id = id;
     }
 
+    public boolean isBanned() {
+        return isBanned;
+    }
+
+    public void setBanned(boolean banned) {
+        isBanned = banned;
+    }
+    public List<String> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(List<String> warnings) {
+        this.warnings = warnings;
+    }
+
     private User(Builder builder) {
         this.username = builder.username;
         this.email = builder.email;
         this.password = builder.password;
+        this.isBanned = builder.isBanned;
         this.followers = builder.followers;
         this.following = builder.following;
         this.blockedUsers = builder.blockedUsers;
+        this.warnings = builder.warnings;
     }
+
     public static class Builder {
         private String username;
         private String email;
         private String password;
+        private boolean isBanned;
+        private List<String> warnings = new ArrayList<>();
         private Set<User> followers = new HashSet<>();
         private Set<User> following = new HashSet<>();
         private Set<User> blockedUsers = new HashSet<>();
@@ -135,6 +161,11 @@ public class User {
             return this;
         }
 
+        public Builder isBanned(boolean isBanned) {
+            this.isBanned = isBanned;
+            return this;
+        }
+
 
         public Builder followers(Set<User> followers) {
             this.followers = followers;
@@ -148,6 +179,11 @@ public class User {
 
         public Builder blockedUsers(Set<User> blockedUsers) {
             this.blockedUsers = blockedUsers;
+            return this;
+        }
+
+        public Builder warnings(List<String> warnings) {
+            this.warnings = warnings;
             return this;
         }
 

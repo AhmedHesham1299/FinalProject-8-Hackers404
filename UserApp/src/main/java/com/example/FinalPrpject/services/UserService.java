@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -33,6 +34,18 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     public List<User> getAllUsers() {
@@ -103,5 +116,36 @@ public class UserService {
 
         moderationClient.reportUser(reporterId, reportedId, body);
     }
+
+    public void banUser(Long userId) {
+        User user = getUserById(userId);
+
+        if (user.isBanned()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already banned");
+        }
+
+        user.setBanned(true);
+        userRepository.save(user);
+    }
+
+    public void unbanUser(Long userId) {
+        User user = getUserById(userId);
+
+        if (!user.isBanned()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User is not banned");
+        }
+
+        user.setBanned(false);
+        userRepository.save(user);
+    }
+
+    public void warnUser(Long userId, String message) {
+        User user = getUserById(userId);
+
+        user.getWarnings().add(message);
+        userRepository.save(user);
+    }
+
+
 
 }
