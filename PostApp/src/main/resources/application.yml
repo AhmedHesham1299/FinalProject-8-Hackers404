@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: PostApp
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
+    redis:
+      cache-null-values: false 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest

@@ -1,8 +1,11 @@
 package com.example.FinalProject.config;
 
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.Queue;
 
 @Configuration
 public class RabbitMQConfig {
@@ -14,4 +17,40 @@ public class RabbitMQConfig {
     public TopicExchange postEventsExchange() {
         return new TopicExchange(POST_EVENTS_EXCHANGE);
     }
+
+    public static final String POST_QUEUE = "post_queue";
+    public static final String NOTIFICATION_QUEUE = "notification_queue";
+    public static final String EXCHANGE = "shared_exchange";
+    public static final String POST_ROUTING = "post_routing";
+    public static final String NOTIFICATION_ROUTING = "notification_routing";
+
+    @Bean
+    public Queue postQueue() {
+        return new Queue(POST_QUEUE);
+    }
+    @Bean
+    public Queue notificationQueue() {
+        return new Queue(NOTIFICATION_QUEUE);
+    }
+
+    @Bean
+    public TopicExchange sharedExchange() {
+        return new TopicExchange(EXCHANGE);
+    }
+
+    @Bean
+    public Binding postBinding(TopicExchange sharedExchange) {
+        return BindingBuilder
+                .bind(postQueue())
+                .to(sharedExchange)
+                .with(POST_ROUTING);
+    }
+    @Bean
+    public Binding notificationBinding(TopicExchange sharedExchange) {
+        return BindingBuilder
+                .bind(notificationQueue())
+                .to(sharedExchange)
+                .with(NOTIFICATION_ROUTING);
+    }
+
 }
