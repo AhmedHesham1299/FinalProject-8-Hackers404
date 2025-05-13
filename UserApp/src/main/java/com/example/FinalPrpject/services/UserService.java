@@ -1,6 +1,7 @@
 package com.example.FinalPrpject.services;
 
 
+import com.example.FinalPrpject.DTO.Report;
 import com.example.FinalPrpject.clients.ModerationClient;
 import com.example.FinalPrpject.models.User;
 import com.example.FinalPrpject.repositories.UserRepository;
@@ -9,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -111,10 +110,12 @@ public class UserService {
     public void reportUser(Long reporterId, Long reportedId, String reason) {
         getUserById(reporterId);
         getUserById(reportedId);
-        Map<String, String> body = new HashMap<>();
-        body.put("reason", reason);
+        Report report = new Report();
+        report.setReporterUserId(reporterId);
+        report.setReportedUserId(reportedId);
+        report.setReason(reason);
 
-        moderationClient.reportUser(reporterId, reportedId, body);
+        moderationClient.reportUser(report);
     }
 
     public void banUser(Long userId) {

@@ -13,7 +13,7 @@ public class UnbanCommand {
     }
 
     public void execute() {
-        userFeignClient.unbanUser(userId);
+        userFeignClient.unbanUser(userId, "MODERATOR");
     }
 
 }

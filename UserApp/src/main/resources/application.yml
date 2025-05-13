@@ -10,7 +10,7 @@ spring:
     username: guest
     password: guest
   datasource:
-      url: jdbc:postgresql://localhost:5432/byteforge
+      url: jdbc:postgresql://localhost:5433/byteforge
       username: postgres
       password: postgres
       driver-class-name: org.postgresql.Driver

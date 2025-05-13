@@ -15,7 +15,7 @@ public class WarnCommand {
     }
 
     public void execute() {
-        userFeignClient.warnUser(userId, message);
+        userFeignClient.warnUser(userId, "MODERATOR", message);
     }
 
 }
