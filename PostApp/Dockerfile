@@ -1,4 +1,7 @@
 FROM openjdk:25-ea-4-jdk-oraclelinux9
-VOLUME /tmp
-COPY target/*.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"] 
+
+WORKDIR /app
+COPY target/*.jar /target/app.jar
+
+EXPOSE 8080
+CMD ["java", "-jar", "/target/app.jar"]

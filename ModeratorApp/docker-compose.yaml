@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/moderatorappdb
+      - spring.datasource.username=postgres
+      - spring.datasource.password=pass1234
+      - spring.data.mongodb.database=moderatorappdb
+    ports:
+      - "8060:8060"
+    depends_on:
+      - postgres
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: moderatorappdb
+    ports:
+      - "5432:5432"

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: post-app
+  template:
+    metadata:
+      labels:
+        app: post-app
+    spec:
+      containers:
+      - name: post-app
+        image: ahmedhesham890/post-app:latest
+        ports:
+        - containerPort: 8081
+        envFrom:
+        - configMapRef:
+            name: app-config
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongodb-root-password
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongodb-password
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-secret
+              key: rabbitmq-password
+        - name: SPRING_PROFILES_ACTIVE
+          value: "k8s"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: app-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: post-app
+spec:
+  type: NodePort
+  selector:
+    app: post-app
+  ports:
+    - port: 8081
+      targetPort: 8081 
