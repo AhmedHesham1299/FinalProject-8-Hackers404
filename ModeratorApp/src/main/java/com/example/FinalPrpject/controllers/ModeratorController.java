@@ -81,8 +81,8 @@ public class ModeratorController {
 
     // Update moderator
     @PutMapping("/{id}")
-    public ResponseEntity<Moderator> update(@PathVariable Long id, @RequestBody Moderator updated) {
-        return ResponseEntity.ok(moderatorService.updateModerator(id, updated));
+    public ResponseEntity<Moderator> update(@PathVariable Long id, @RequestBody Moderator updatedModerator) {
+        return ResponseEntity.ok(moderatorService.updateModerator(id, updatedModerator));
     }
 
     // Delete moderator
