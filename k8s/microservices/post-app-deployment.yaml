@@ -51,9 +51,9 @@ kind: Service
 metadata:
   name: post-app
 spec:
+  type: NodePort
   selector:
     app: post-app
   ports:
-    - protocol: TCP
-      port: 8081
+    - port: 8081
       targetPort: 8081 

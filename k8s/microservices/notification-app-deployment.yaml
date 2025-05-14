@@ -51,9 +51,9 @@ kind: Service
 metadata:
   name: notification-app
 spec:
+  type: NodePort
   selector:
     app: notification-app
   ports:
-    - protocol: TCP
-      port: 8083
+    - port: 8083
       targetPort: 8083 
