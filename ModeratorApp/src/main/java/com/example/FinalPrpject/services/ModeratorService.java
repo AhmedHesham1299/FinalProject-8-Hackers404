@@ -30,6 +30,8 @@ public class ModeratorService {
     public Moderator updateModerator(Long id, Moderator updatedModerator) {
         return moderatorRepository.findById(id).map(moderator -> {
             moderator.setUsername(updatedModerator.getUsername());
+            moderator.setEmail(updatedModerator.getEmail());
+            moderator.setPassword(updatedModerator.getPassword());
             return moderatorRepository.save(moderator);
         }).orElseThrow(() -> new RuntimeException("Moderator not found"));
     }
