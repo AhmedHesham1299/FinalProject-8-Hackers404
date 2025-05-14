@@ -40,3 +40,5 @@ echo "All images built and pushed successfully!"
 
 # Apply Kubernetes manifests
 kubectl apply -f k8s/ 
+
+echo "All Pods created successfully!"

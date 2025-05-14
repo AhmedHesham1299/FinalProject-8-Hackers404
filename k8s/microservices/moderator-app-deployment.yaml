@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moderator-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: moderator-app
+  template:
+    metadata:
+      labels:
+        app: moderator-app
+    spec:
+      containers:
+      - name: moderator-app
+        image: ahmedhesham890/moderator-app:latest
+        ports:
+        - containerPort: 8082
+        envFrom:
+        - configMapRef:
+            name: app-config
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: postgresql-password
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-secret
+              key: rabbitmq-password
+        - name: SPRING_PROFILES_ACTIVE
+          value: "k8s"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: app-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moderator-app
+spec:
+  selector:
+    app: moderator-app
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082 
