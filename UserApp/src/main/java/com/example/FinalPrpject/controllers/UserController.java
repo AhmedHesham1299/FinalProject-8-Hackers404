@@ -1,5 +1,6 @@
 package com.example.FinalPrpject.controllers;
 
+import com.example.FinalPrpject.models.BanRequest;
 import com.example.FinalPrpject.models.User;
 import com.example.FinalPrpject.models.UserResponse;
 import com.example.FinalPrpject.rabbitMQ.UserProducer;
@@ -95,7 +96,8 @@ public class UserController {
 
     @PutMapping("/{id}/ban")
     public ResponseEntity<String> banUser(@PathVariable Long id,
-                                          @RequestHeader(value = "X-Role", required = false) String role) {
+                                          @RequestHeader(value = "X-Role", required = false) String role,
+                                          @RequestBody BanRequest banRequest) {
         if (role == null || role.isBlank()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Please log in to perform this action.");

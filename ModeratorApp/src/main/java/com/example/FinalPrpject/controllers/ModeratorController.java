@@ -12,7 +12,6 @@ import com.example.FinalPrpject.strategies.BanStrategy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public class ModeratorController {
     public ResponseEntity<String> banUser(@RequestBody BanPayload banPayload) {
         banPayload.setBanDate(LocalDateTime.now());
         BanStrategy banStrategy = (BanStrategy) applicationContext.getBean(banPayload.getBanType().name());
-        BanCommand banCommand = new BanCommand(banPayload, userFeignClient, banStrategy);
+        BanCommand banCommand = new BanCommand(banPayload, banStrategy);
         banCommand.execute();
         banPayloadRepository.save(banPayload);
         return ResponseEntity.ok("User banned successfully.");
