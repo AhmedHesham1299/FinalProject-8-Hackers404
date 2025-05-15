@@ -1,63 +1,70 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: postgresql-secret
+  name: postgres-secret
 type: Opaque
 data:
-  postgresql-password: cGFzc3dvcmQ=  # base64 encoded "password"
-  postgresql-postgres-password: cG9zdGdyZXNwYXNzd29yZA==  # base64 encoded "postgrespassword"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgresql
-  labels:
-    app: postgresql
-spec:
-  ports:
-  - port: 5432
-    targetPort: 5432
-    name: postgresql
-  clusterIP: None
-  selector:
-    app: postgresql
+  POSTGRES_USER: cG9zdGdyZXM=       # base64 for "postgres"
+  POSTGRES_PASSWORD: MTIzNA==  # base64 for "1234"
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgresql
+  name: postgres
 spec:
-  serviceName: postgresql
+  serviceName: "postgres"
   replicas: 1
   selector:
     matchLabels:
-      app: postgresql
+      app: postgres
   template:
     metadata:
       labels:
-        app: postgresql
+        app: postgres
     spec:
       containers:
-      - name: postgresql
-        image: postgres:latest
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgresql-secret
-              key: postgresql-password
-        - name: POSTGRES_USER
-          value: postgres
-        volumeMounts:
-        - name: postgresql-data
-          mountPath: /var/lib/postgresql/data
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d/
+      volumes:
+        - name: init-scripts
+          configMap:
+            name: postgres-initdb-scripts
   volumeClaimTemplates:
-  - metadata:
-      name: postgresql-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 1Gi 
+    - metadata:
+        name: postgres-persistent-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None  # Headless service
+  selector:
+    app: postgres
+

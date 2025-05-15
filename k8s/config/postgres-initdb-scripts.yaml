@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-initdb-scripts
+data:
+  init-multiple-dbs.sql: |
+    CREATE DATABASE moderatordb;
+    CREATE DATABASE userdb;

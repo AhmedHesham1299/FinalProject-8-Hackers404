@@ -31,11 +31,6 @@ spec:
             secretKeyRef:
               name: rabbitmq-secret
               key: rabbitmq-password
-        - name: RABBITMQ_ERLANG_COOKIE
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq-secret
-              key: rabbitmq-erlang-cookie
 ---
 apiVersion: v1
 kind: Service
@@ -61,4 +56,3 @@ metadata:
 type: Opaque
 data:
   rabbitmq-password: cGFzc3dvcmQ=  # base64 encoded "password"
-  rabbitmq-erlang-cookie: c2VjcmV0Y29va2ll  # base64 encoded "secretcookie" 
