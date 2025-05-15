@@ -6,6 +6,7 @@ import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Like;
 import com.example.FinalProject.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
@@ -17,8 +18,8 @@ public class NotificationPostObserver implements PostObserver {
     private final NotificationEventPublisher notificationEventPublisher;
 
     @Autowired
-    public NotificationPostObserver(PostObservable postObservable, 
-                                  NotificationEventPublisher notificationEventPublisher) {
+    public NotificationPostObserver(PostObservable postObservable,
+            @Qualifier("baseNotificationEventPublisher") NotificationEventPublisher notificationEventPublisher) {
         this.postObservable = postObservable;
         this.notificationEventPublisher = notificationEventPublisher;
     }
@@ -41,9 +42,7 @@ public class NotificationPostObserver implements PostObserver {
                         "New Comment",
                         "Your post '" + post.getTitle() + "' has a new comment",
                         "/posts/" + post.getId(),
-                        "COMMENT"
-                )
-        );
+                        "COMMENT"));
     }
 
     @Override
@@ -54,16 +53,14 @@ public class NotificationPostObserver implements PostObserver {
         }
 
         String action = like.isLike() ? "liked" : "disliked";
-        
+
         notificationEventPublisher.sendNotificationEvent(
                 new NotificationEvent(
                         post.getAuthorId(),
                         "Post " + action,
                         "Someone has " + action + " your post '" + post.getTitle() + "'",
                         "/posts/" + post.getId(),
-                        "LIKE"
-                )
-        );
+                        "LIKE"));
     }
 
     @Override
@@ -74,15 +71,13 @@ public class NotificationPostObserver implements PostObserver {
         }
 
         String action = like.isLike() ? "liked" : "disliked";
-        
+
         notificationEventPublisher.sendNotificationEvent(
                 new NotificationEvent(
                         comment.getAuthorId(),
                         "Comment " + action,
                         "Someone has " + action + " your comment",
                         "/posts/" + comment.getPostId(),
-                        "LIKE"
-                )
-        );
+                        "LIKE"));
     }
-} 
+}

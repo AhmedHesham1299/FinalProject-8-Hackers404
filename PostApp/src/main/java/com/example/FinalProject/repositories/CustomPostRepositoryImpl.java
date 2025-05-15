@@ -29,7 +29,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
             String regex = ".*" + criteria.keywords() + ".*";
             critList.add(new Criteria().orOperator(
                     Criteria.where("title").regex(regex, "i"),
-                    Criteria.where("content").regex(regex, "i")));
+                    Criteria.where("content").regex(regex, "i"),
+                    Criteria.where("tags").regex(regex, "i")));
         }
         if (criteria.tags() != null && !criteria.tags().isEmpty()) {
             critList.add(Criteria.where("tags").in(criteria.tags()));

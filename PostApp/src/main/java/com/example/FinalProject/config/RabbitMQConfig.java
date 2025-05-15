@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 
 @Configuration
 public class RabbitMQConfig {
@@ -17,7 +19,6 @@ public class RabbitMQConfig {
     public static final String USER_DELETED_ROUTING_KEY = "user.event.deleted";
     public static final String USER_BANNED_ROUTING_KEY = "user.event.banned";
     public static final String USER_EVENTS_QUEUE = "user.events.queue";
-
 
     public static final String POST_EVENTS_EXCHANGE = "post.events.exchange";
     public static final String POST_CREATED_ROUTING_KEY = "post.event.created";
@@ -38,6 +39,7 @@ public class RabbitMQConfig {
     public Queue postQueue() {
         return new Queue(POST_QUEUE);
     }
+
     @Bean
     public Queue notificationQueue() {
         return new Queue(NOTIFICATION_QUEUE);
@@ -55,6 +57,7 @@ public class RabbitMQConfig {
                 .to(sharedExchange)
                 .with(POST_ROUTING);
     }
+
     @Bean
     public Binding notificationBinding(TopicExchange sharedExchange) {
         return BindingBuilder
@@ -62,7 +65,6 @@ public class RabbitMQConfig {
                 .to(sharedExchange)
                 .with(NOTIFICATION_ROUTING);
     }
-
 
     @Bean
     public TopicExchange notificationEventsExchange() {
@@ -79,6 +81,9 @@ public class RabbitMQConfig {
         return new TopicExchange(LikeEventPublisher.LIKE_EVENTS_EXCHANGE);
     }
 
-
+    @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
 
 }
