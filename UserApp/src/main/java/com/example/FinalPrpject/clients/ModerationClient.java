@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
-@FeignClient(name = "moderation-service", url = "http://localhost:8060/reports")
+@FeignClient(name = "moderation-service", url = "http://moderator-app:8082/reports")
 public interface ModerationClient {// In ModeratorApp
     @PostMapping
     ResponseEntity<Report> reportUser(@RequestBody Report report);
