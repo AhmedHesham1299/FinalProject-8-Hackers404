@@ -60,26 +60,6 @@ public class PostController {
         postService.deletePost(postId);
     }
 
-    @PostMapping("/{postId}/comments")
-    public Post addComment(@PathVariable String postId, @RequestBody Comment comment) {
-        return postService.addComment(postId, comment);
-    }
 
-    @GetMapping("/{postId}/comments")
-    public List<Comment> getComments(@PathVariable String postId) {
-        return postService.getComments(postId);
-    }
-
-    @PutMapping("/{postId}/comments/{index}")
-    public Post updateComment(@PathVariable String postId,
-                                              @PathVariable int index,
-                                              @RequestBody Comment comment) {
-        return postService.updateComment(postId, index, comment);
-    }
-
-    @DeleteMapping("/{postId}/comments/{index}")
-    public Post deleteComment(@PathVariable String postId, @PathVariable int index) {
-        return postService.deleteComment(postId, index);
-    }
 
 }

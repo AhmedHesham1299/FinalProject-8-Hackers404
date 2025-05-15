@@ -3,19 +3,19 @@ spring:
     name: PostApp
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI}
+      uri: mongodb://localhost:27017/postdb
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: localhost
+      port: 6379
   cache:
     type: redis
     redis:
       cache-null-values: false
   rabbitmq:
-    host: ${SPRING_RABBITMQ_HOST}
-    port: ${SPRING_RABBITMQ_PORT}
-    username: ${SPRING_RABBITMQ_USERNAME}
-    password: ${SPRING_RABBITMQ_PASSWORD}
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
     listener:
       simple:
         retry:
@@ -31,7 +31,7 @@ server:
 logging:
   level:
     com.example.FinalProject: INFO
-    com.example.FinalProject.events: ${LOGGING_LEVEL_COM_EXAMPLE_FINALPROJECT_EVENTS}
+    com.example.FinalProject.events: INFO
     org.springframework.data.mongodb: WARN
     org.springframework.amqp: INFO
 

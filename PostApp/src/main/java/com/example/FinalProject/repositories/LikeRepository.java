@@ -16,5 +16,5 @@ public interface LikeRepository extends MongoRepository<Like, String> {
     
     void deleteByTargetIdAndTargetType(String targetId, String targetType);
     
-    long countByTargetIdAndTargetTypeAndIsLike(String targetId, String targetType, boolean isLike);
+    long countByTargetIdAndTargetTypeAndLike(String targetId, String targetType, boolean like);
 } 
