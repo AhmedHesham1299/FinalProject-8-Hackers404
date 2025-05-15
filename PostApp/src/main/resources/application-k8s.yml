@@ -1,6 +1,6 @@
 spring:
   application:
-    name: PostApp
+    name: post-service
   data:
     mongodb:
       uri: ${SPRING_DATA_MONGODB_URI}
@@ -42,4 +42,4 @@ management:
         include: health,info,metrics
   endpoint:
     health:
-      show-details: always
+      show-details: always 
