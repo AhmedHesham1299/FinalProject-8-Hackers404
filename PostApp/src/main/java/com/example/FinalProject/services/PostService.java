@@ -1,5 +1,6 @@
 package com.example.FinalProject.services;
 
+import com.example.FinalProject.config.RabbitMQConfig;
 import com.example.FinalProject.criteria.SearchCriteria;
 import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
@@ -9,6 +10,9 @@ import com.example.FinalProject.events.dtos.PostEventPayload;
 import com.example.FinalProject.events.dtos.PostCreatedEvent;
 import com.example.FinalProject.events.dtos.PostUpdatedEvent;
 import com.example.FinalProject.dtos.PostUpdateRequestDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,7 +24,7 @@ import java.util.ArrayList;
 public class PostService {
     private final PostRepository postRepository;
     private final PostEventPublisher postEventPublisher;
-
+    private static final Logger logger = LoggerFactory.getLogger(PostService.class);
     public PostService(PostRepository postRepository, PostEventPublisher postEventPublisher) {
         this.postRepository = postRepository;
         this.postEventPublisher = postEventPublisher;
@@ -106,5 +110,15 @@ public class PostService {
             throw new IllegalArgumentException("Invalid comment index");
         post.getComments().remove(index);
         return postRepository.save(post);
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.POST_QUEUE)
+    public void receivePost(String id) {
+        System.out.println("Post received: " + id);
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
+    public void handleUserNotificationEvent(String message) {
+        logger.info("Received notification : {}", message);
     }
 }
