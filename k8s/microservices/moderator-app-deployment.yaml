@@ -24,8 +24,8 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgresql-secret
-              key: postgresql-password
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
         - name: RABBITMQ_PASSWORD
           valueFrom:
             secretKeyRef:

@@ -4,16 +4,16 @@ import com.example.FinalPrpject.models.BanRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "UserApp", url = "http://localhost:8090")
+@FeignClient(name = "UserApp", url = "http://user-app:8080/users")
 public interface UserFeignClient {
 
-    @PutMapping("/users/{id}/ban")
+    @PutMapping("/{id}/ban")
     void banUser(@PathVariable("id") Long userId, @RequestHeader(value = "X-Role", required = false) String role, @RequestBody BanRequest banRequest);
 
-    @PutMapping("/users/{id}/unban")
+    @PutMapping("/{id}/unban")
     void unbanUser(@PathVariable("id") Long userId, @RequestHeader(value = "X-Role", required = false) String role);
 
-    @PostMapping("/users/{id}/warn")
+    @PostMapping("/{id}/warn")
     void warnUser(@PathVariable("id") Long userId, @RequestHeader(value = "X-Role", required = false) String role, @RequestBody String message);
 
 }

@@ -4,7 +4,6 @@ metadata:
   name: mongodb-secret
 type: Opaque
 data:
-  mongodb-root-password: cm9vdHBhc3N3b3Jk  # base64 encoded "rootpassword"
   mongodb-password: cGFzc3dvcmQ=  # base64 encoded "password"
 ---
 apiVersion: v1
@@ -44,10 +43,7 @@ spec:
         - containerPort: 27017
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: mongodb-root-password
+          value: mongodb
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
