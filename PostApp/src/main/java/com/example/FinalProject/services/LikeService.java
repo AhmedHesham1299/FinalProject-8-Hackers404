@@ -52,7 +52,7 @@ public class LikeService {
 
         if (existingLike.isPresent()) {
             Like like = existingLike.get();
-            
+
             // If the reaction type is the same, remove it
             if (like.isLike() == isLike) {
                 // Update post counts
@@ -62,14 +62,14 @@ public class LikeService {
                     post.setDislikes(post.getDislikes() - 1);
                 }
                 postRepository.save(post);
-                
+
                 // Delete the like
                 likeRepository.delete(like);
                 return null;
             } else {
                 // Toggle the reaction type
                 like.setLike(isLike);
-                
+
                 // Update post counts
                 if (isLike) {
                     post.setLikes(post.getLikes() + 1);
@@ -79,22 +79,22 @@ public class LikeService {
                     post.setDislikes(post.getDislikes() + 1);
                 }
                 postRepository.save(post);
-                
+
                 // Update the like
                 Like updatedLike = likeRepository.save(like);
-                
+
                 // Publish event
                 publishLikeEvent(updatedLike);
-                
+
                 // Notify observers
                 postObservable.notifyPostLiked(post, updatedLike);
-                
+
                 return updatedLike;
             }
         } else {
             // Create new reaction
             Like newLike = new Like(userId, postId, "post", isLike);
-            
+
             // Update post counts
             if (isLike) {
                 post.setLikes(post.getLikes() + 1);
@@ -102,16 +102,16 @@ public class LikeService {
                 post.setDislikes(post.getDislikes() + 1);
             }
             postRepository.save(post);
-            
+
             // Save the new like
             Like savedLike = likeRepository.save(newLike);
-            
+
             // Publish event
             publishLikeEvent(savedLike);
-            
+
             // Notify observers
             postObservable.notifyPostLiked(post, savedLike);
-            
+
             return savedLike;
         }
     }
@@ -119,7 +119,7 @@ public class LikeService {
     /**
      * Toggle a like/dislike on a comment
      */
-    @CacheEvict(value = "comments", key = "#comment.postId")
+    @CacheEvict(value = "comments", allEntries = true)
     public Like toggleCommentReaction(String commentId, String userId, boolean isLike) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
@@ -129,7 +129,7 @@ public class LikeService {
 
         if (existingLike.isPresent()) {
             Like like = existingLike.get();
-            
+
             // If the reaction type is the same, remove it
             if (like.isLike() == isLike) {
                 // Update comment counts
@@ -138,15 +138,27 @@ public class LikeService {
                 } else {
                     comment.setDislikes(comment.getDislikes() - 1);
                 }
-                commentRepository.save(comment);
-                
+                Comment savedComment = commentRepository.save(comment);
+                // Update embedded comment in post
+                Post postToUpdate = postRepository.findById(savedComment.getPostId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+                if (postToUpdate.getComments() != null) {
+                    for (int i = 0; i < postToUpdate.getComments().size(); i++) {
+                        if (postToUpdate.getComments().get(i).getId().equals(savedComment.getId())) {
+                            postToUpdate.getComments().set(i, savedComment);
+                            break;
+                        }
+                    }
+                    postRepository.save(postToUpdate);
+                }
+
                 // Delete the like
                 likeRepository.delete(like);
                 return null;
             } else {
                 // Toggle the reaction type
                 like.setLike(isLike);
-                
+
                 // Update comment counts
                 if (isLike) {
                     comment.setLikes(comment.getLikes() + 1);
@@ -155,47 +167,70 @@ public class LikeService {
                     comment.setLikes(comment.getLikes() - 1);
                     comment.setDislikes(comment.getDislikes() + 1);
                 }
-                commentRepository.save(comment);
-                
+                Comment savedComment = commentRepository.save(comment);
+                // Update embedded comment in post
+                Post postToUpdate = postRepository.findById(savedComment.getPostId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+                if (postToUpdate.getComments() != null) {
+                    for (int i = 0; i < postToUpdate.getComments().size(); i++) {
+                        if (postToUpdate.getComments().get(i).getId().equals(savedComment.getId())) {
+                            postToUpdate.getComments().set(i, savedComment);
+                            break;
+                        }
+                    }
+                    postRepository.save(postToUpdate);
+                }
+
                 // Update the like
                 Like updatedLike = likeRepository.save(like);
-                
+
                 // Publish event
                 publishLikeEvent(updatedLike);
-                
+
                 // Notify observers
                 postObservable.notifyCommentLiked(comment, updatedLike);
-                
+
                 return updatedLike;
             }
         } else {
             // Create new reaction
             Like newLike = new Like(userId, commentId, "comment", isLike);
-            
+
             // Update comment counts
             if (isLike) {
                 comment.setLikes(comment.getLikes() + 1);
             } else {
                 comment.setDislikes(comment.getDislikes() + 1);
             }
-            commentRepository.save(comment);
-            
+            Comment savedComment = commentRepository.save(comment);
+            // Update embedded comment in post
+            Post postToUpdate = postRepository.findById(savedComment.getPostId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+            if (postToUpdate.getComments() != null) {
+                for (int i = 0; i < postToUpdate.getComments().size(); i++) {
+                    if (postToUpdate.getComments().get(i).getId().equals(savedComment.getId())) {
+                        postToUpdate.getComments().set(i, savedComment);
+                        break;
+                    }
+                }
+                postRepository.save(postToUpdate);
+            }
+
             // Save the new like
             Like savedLike = likeRepository.save(newLike);
-            
+
             // Publish event
             publishLikeEvent(savedLike);
-            
+
             // Notify observers
             postObservable.notifyCommentLiked(comment, savedLike);
-            
+
             return savedLike;
         }
     }
 
     private void publishLikeEvent(Like like) {
         likeEventPublisher.sendLikeEvent(
-                new LikeEvent(like.getId(), like.getUserId(), like.getTargetId(), like.getTargetType(), like.isLike())
-        );
+                new LikeEvent(like.getId(), like.getUserId(), like.getTargetId(), like.getTargetType(), like.isLike()));
     }
-} 
+}
