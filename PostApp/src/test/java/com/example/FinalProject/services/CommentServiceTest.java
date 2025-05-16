@@ -71,6 +71,7 @@ public class CommentServiceTest {
     @Test
     void getCommentsByPostId_ShouldReturnCommentsList() {
         // Given
+        when(postRepository.existsById("post123")).thenReturn(true);
         List<Comment> comments = Arrays.asList(testComment);
         when(commentRepository.findByPostId("post123")).thenReturn(comments);
 
@@ -161,6 +162,7 @@ public class CommentServiceTest {
     void updateComment_ShouldUpdateContentAndPublish() {
         // Given
         when(commentRepository.findById("comment123")).thenReturn(Optional.of(testComment));
+        when(postRepository.findById("post123")).thenReturn(Optional.of(testPost));
 
         Comment updateRequest = new Comment();
         updateRequest.setContent("Updated content");

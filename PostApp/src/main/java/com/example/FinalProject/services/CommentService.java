@@ -10,7 +10,6 @@ import com.example.FinalProject.repositories.CommentRepository;
 import com.example.FinalProject.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -32,10 +31,10 @@ public class CommentService {
 
     @Autowired
     public CommentService(CommentRepository commentRepository,
-                          PostRepository postRepository,
-                          MongoTemplate mongoTemplate,
-                          CommentEventPublisher commentEventPublisher,
-                          PostObservable postObservable) {
+            PostRepository postRepository,
+            MongoTemplate mongoTemplate,
+            CommentEventPublisher commentEventPublisher,
+            PostObservable postObservable) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.mongoTemplate = mongoTemplate;
@@ -43,8 +42,11 @@ public class CommentService {
         this.postObservable = postObservable;
     }
 
-    @Cacheable(value = "comments", key = "#postId")
     public List<Comment> getCommentsByPostId(String postId) {
+        // Return 404 if the post doesn't exist
+        if (!postRepository.existsById(postId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        }
         return commentRepository.findByPostId(postId);
     }
 
