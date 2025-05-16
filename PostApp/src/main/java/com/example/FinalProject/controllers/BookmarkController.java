@@ -36,4 +36,10 @@ public class BookmarkController {
         List<Bookmark> bookmarks = bookmarkService.getBookmarksByUserId(userId);
         return ResponseEntity.ok(bookmarks);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Bookmark>> listAllBookmarks() {
+        List<Bookmark> bookmarks = bookmarkService.getAllBookmarks();
+        return ResponseEntity.ok(bookmarks);
+    }
 }

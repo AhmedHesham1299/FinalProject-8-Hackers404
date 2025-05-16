@@ -52,4 +52,8 @@ public class BookmarkService {
         }
         bookmarkRepository.deleteById(id);
     }
+
+    public List<Bookmark> getAllBookmarks() {
+        return bookmarkRepository.findAll();
+    }
 }
