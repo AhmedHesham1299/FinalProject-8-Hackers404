@@ -35,6 +35,9 @@ public class PostService {
     }
 
     public Post createPost(Post post) {
+        if (post.getCreatedAt() == null) {
+            post.setCreatedAt(LocalDateTime.now());
+        }
         Post saved = postRepository.save(post);
         PostEventPayload payload = new PostEventPayload(saved.getId(), saved.getTitle(), saved.getAuthorId(),
                 saved.getCreatedAt());

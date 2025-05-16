@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/bookmarks")
@@ -26,9 +28,12 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/{bookmarkId}")
-    public ResponseEntity<Void> removeBookmark(@PathVariable String bookmarkId) {
+    public ResponseEntity<Map<String, String>> removeBookmark(@PathVariable String bookmarkId) {
         bookmarkService.deleteBookmarkById(bookmarkId);
-        return ResponseEntity.noContent().build();
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Bookmark deleted successfully");
+        response.put("bookmarkId", bookmarkId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping

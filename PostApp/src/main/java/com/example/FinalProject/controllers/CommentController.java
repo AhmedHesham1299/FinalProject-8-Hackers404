@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api")
@@ -60,8 +61,11 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable String id) {
+    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable String id) {
         commentService.deleteComment(id);
-        return ResponseEntity.noContent().build();
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Comment deleted successfully");
+        response.put("commentId", id);
+        return ResponseEntity.ok(response);
     }
 } 
