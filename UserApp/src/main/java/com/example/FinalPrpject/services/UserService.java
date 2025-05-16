@@ -1,6 +1,7 @@
 package com.example.FinalPrpject.services;
 
 
+import com.example.FinalPrpject.DTO.NotificationPreferences;
 import com.example.FinalPrpject.DTO.Report;
 import com.example.FinalPrpject.clients.ModerationClient;
 import com.example.FinalPrpject.models.User;
@@ -117,6 +118,15 @@ public class UserService {
 
         moderationClient.reportUser(report);
     }
+
+    public boolean updatePreferences(Long userId, NotificationPreferences preferences) {
+        User user = getUserById(userId);
+        user.setPushEnabled(preferences.isPushEnabled());
+        user.setEmailEnabled(preferences.isEmailEnabled());
+        userRepository.save(user);
+        return true;
+    }
+
 
     public void banUser(Long userId) {
         User user = getUserById(userId);
