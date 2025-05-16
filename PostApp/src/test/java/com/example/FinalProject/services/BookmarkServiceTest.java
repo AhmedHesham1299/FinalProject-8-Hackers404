@@ -3,6 +3,7 @@ package com.example.FinalProject.services;
 import com.example.FinalProject.controllers.BookmarkRequestPayload;
 import com.example.FinalProject.models.Bookmark;
 import com.example.FinalProject.repositories.BookmarkRepository;
+import com.example.FinalProject.repositories.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,9 @@ public class BookmarkServiceTest {
     @Mock
     private BookmarkRepository bookmarkRepository;
 
+    @Mock
+    private PostRepository postRepository;
+
     @InjectMocks
     private BookmarkService bookmarkService;
 
@@ -45,6 +49,7 @@ public class BookmarkServiceTest {
     void createBookmark_whenDoesNotExist_shouldSaveAndReturnBookmark() {
         // Arrange
         BookmarkRequestPayload payload = new BookmarkRequestPayload(userId, postId);
+        when(postRepository.existsById(postId)).thenReturn(true);
         when(bookmarkRepository.existsByUserIdAndPostId(userId, postId)).thenReturn(false);
         when(bookmarkRepository.save(any(Bookmark.class))).thenReturn(sampleBookmark);
 
@@ -63,6 +68,7 @@ public class BookmarkServiceTest {
     void createBookmark_whenAlreadyExists_shouldThrowConflictException() {
         // Arrange
         BookmarkRequestPayload payload = new BookmarkRequestPayload(userId, postId);
+        when(postRepository.existsById(postId)).thenReturn(true);
         when(bookmarkRepository.existsByUserIdAndPostId(userId, postId)).thenReturn(true);
 
         // Act & Assert

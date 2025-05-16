@@ -3,6 +3,7 @@ package com.example.FinalProject.services;
 import com.example.FinalProject.controllers.BookmarkRequestPayload;
 import com.example.FinalProject.models.Bookmark;
 import com.example.FinalProject.repositories.BookmarkRepository;
+import com.example.FinalProject.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,13 +17,18 @@ import java.util.Optional;
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
+    private final PostRepository postRepository;
 
     @Autowired
-    public BookmarkService(BookmarkRepository bookmarkRepository) {
+    public BookmarkService(BookmarkRepository bookmarkRepository, PostRepository postRepository) {
         this.bookmarkRepository = bookmarkRepository;
+        this.postRepository = postRepository;
     }
 
     public Bookmark createBookmark(BookmarkRequestPayload payload) {
+        if (!postRepository.existsById(payload.postId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        }
         if (bookmarkRepository.existsByUserIdAndPostId(payload.userId(), payload.postId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Bookmark already exists");
         }
