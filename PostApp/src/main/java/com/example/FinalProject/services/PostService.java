@@ -6,6 +6,7 @@ import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.repositories.PostRepository;
 import com.example.FinalProject.repositories.CommentRepository;
+import com.example.FinalProject.repositories.BookmarkRepository;
 import com.example.FinalProject.events.PostEventPublisher;
 import com.example.FinalProject.events.dtos.PostEventPayload;
 import com.example.FinalProject.events.dtos.PostCreatedEvent;
@@ -25,13 +26,16 @@ import java.util.ArrayList;
 public class PostService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final BookmarkRepository bookmarkRepository;
     private final PostEventPublisher postEventPublisher;
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
     public PostService(PostRepository postRepository, CommentRepository commentRepository,
+            BookmarkRepository bookmarkRepository,
             PostEventPublisher postEventPublisher) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.bookmarkRepository = bookmarkRepository;
         this.postEventPublisher = postEventPublisher;
     }
 
@@ -88,6 +92,7 @@ public class PostService {
         }
         postRepository.deleteById(postId);
         commentRepository.deleteByPostId(postId);
+        bookmarkRepository.deleteByPostId(postId);
     }
 
     public Post addComment(String postId, Comment comment) {

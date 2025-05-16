@@ -3,6 +3,7 @@ package com.example.FinalProject.services;
 import com.example.FinalProject.criteria.SearchCriteria;
 import com.example.FinalProject.repositories.PostRepository;
 import com.example.FinalProject.repositories.CommentRepository;
+import com.example.FinalProject.repositories.BookmarkRepository;
 import com.example.FinalProject.events.PostEventPublisher;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.services.PostService;
@@ -28,6 +29,8 @@ public class PostServiceTest {
     @Mock
     private CommentRepository commentRepository;
     @Mock
+    private BookmarkRepository bookmarkRepository;
+    @Mock
     private PostEventPublisher postEventPublisher;
 
     private PostService postService;
@@ -47,7 +50,7 @@ public class PostServiceTest {
                 LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31));
         criteriaAll = new SearchCriteria("k", Arrays.asList("t"), "a",
                 LocalDate.now().minusDays(5), LocalDate.now());
-        postService = new PostService(postRepository, commentRepository, postEventPublisher);
+        postService = new PostService(postRepository, commentRepository, bookmarkRepository, postEventPublisher);
     }
 
     @Test

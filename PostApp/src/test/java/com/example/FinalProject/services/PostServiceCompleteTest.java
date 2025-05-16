@@ -9,6 +9,7 @@ import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.repositories.PostRepository;
 import com.example.FinalProject.repositories.CommentRepository;
+import com.example.FinalProject.repositories.BookmarkRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,9 @@ public class PostServiceCompleteTest {
 
     @Mock
     private CommentRepository commentRepository;
+
+    @Mock
+    private BookmarkRepository bookmarkRepository;
 
     @Mock
     private PostEventPublisher eventPublisher;
@@ -69,7 +73,7 @@ public class PostServiceCompleteTest {
         Comment comment = new Comment("Test comment", "author123", "post123");
         testPost.setComments(new ArrayList<>(Arrays.asList(comment)));
         testCriteria = criteriaKeywords;
-        postService = new PostService(postRepository, commentRepository, eventPublisher);
+        postService = new PostService(postRepository, commentRepository, bookmarkRepository, eventPublisher);
     }
 
     @Test
@@ -178,6 +182,8 @@ public class PostServiceCompleteTest {
         // Then
         verify(postRepository).existsById("post123");
         verify(postRepository).deleteById("post123");
+        verify(commentRepository).deleteByPostId("post123");
+        verify(bookmarkRepository).deleteByPostId("post123");
     }
 
     @Test

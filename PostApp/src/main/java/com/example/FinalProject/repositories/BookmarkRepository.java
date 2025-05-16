@@ -16,4 +16,6 @@ public interface BookmarkRepository extends MongoRepository<Bookmark, String> {
     void deleteByUserIdAndPostId(String userId, String postId);
 
     boolean existsByUserIdAndPostId(String userId, String postId);
+
+    void deleteByPostId(String postId);
 }
