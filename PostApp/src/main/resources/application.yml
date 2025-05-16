@@ -24,6 +24,9 @@ spring:
           max-attempts: 3
           multiplier: 2
           max-interval: 30000
+  cloud:
+    compatibility-verifier:
+      enabled: false
 
 server:
   port: 8081
@@ -52,3 +55,6 @@ management:
   endpoint:
     health:
       show-details: always
+
+
+#spring.profiles.active=k8s
