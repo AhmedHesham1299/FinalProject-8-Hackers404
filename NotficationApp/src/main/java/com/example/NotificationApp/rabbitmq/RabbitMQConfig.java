@@ -14,7 +14,7 @@ public class RabbitMQConfig {
 
     public static final String NOTIFICATION_QUEUE = "notification_queue";
 
-    public static final String EXCHANGE = "app_exchange";
+    public static final String EXCHANGE = "shared_exchange";
 
     public static final String NOTIFICATION_ROUTING = "notification_routing";
 
