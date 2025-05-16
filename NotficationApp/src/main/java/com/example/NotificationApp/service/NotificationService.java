@@ -109,7 +109,7 @@ public class NotificationService {
         }
 
         String type = switch (notification.getType()) {
-            case "REPORT", "FOLLOW" -> "Email";
+            case "REPORT", "FOLLOW", "UNFOLLOW", "BLOCK", "UNBLOCK" -> "Email";
             default -> "Push";
         };
 

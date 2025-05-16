@@ -17,7 +17,7 @@ public class NotificationHandlerFactory {
 
     public NotificationHandler getHandler(String type) {
         try {
-            String className = "com.example.NotificationApp.handler." + type + "NotificationHandler";
+            String className = "com.example.NotificationApp.strategy." + type + "NotificationHandler";
             Class<?> clazz = Class.forName(className);
             return (NotificationHandler) context.getBean(clazz);
         } catch (Exception e) {

@@ -3,7 +3,7 @@ package com.example.FinalPrpject.DTO;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Notification implements Serializable {
+public class Notification {
     private String senderID;
     private String receiverID;
     private String senderName;
