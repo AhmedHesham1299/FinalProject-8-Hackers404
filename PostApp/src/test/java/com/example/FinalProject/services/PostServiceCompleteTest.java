@@ -8,6 +8,7 @@ import com.example.FinalProject.events.dtos.PostUpdatedEvent;
 import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.repositories.PostRepository;
+import com.example.FinalProject.repositories.CommentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,9 @@ public class PostServiceCompleteTest {
 
     @Mock
     private PostRepository postRepository;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @Mock
     private PostEventPublisher eventPublisher;
@@ -65,7 +69,7 @@ public class PostServiceCompleteTest {
         Comment comment = new Comment("Test comment", "author123", "post123");
         testPost.setComments(new ArrayList<>(Arrays.asList(comment)));
         testCriteria = criteriaKeywords;
-        postService = new PostService(postRepository, eventPublisher);
+        postService = new PostService(postRepository, commentRepository, eventPublisher);
     }
 
     @Test

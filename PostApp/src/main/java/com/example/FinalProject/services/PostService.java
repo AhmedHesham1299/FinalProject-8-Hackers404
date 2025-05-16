@@ -5,6 +5,7 @@ import com.example.FinalProject.criteria.SearchCriteria;
 import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.repositories.PostRepository;
+import com.example.FinalProject.repositories.CommentRepository;
 import com.example.FinalProject.events.PostEventPublisher;
 import com.example.FinalProject.events.dtos.PostEventPayload;
 import com.example.FinalProject.events.dtos.PostCreatedEvent;
@@ -23,10 +24,14 @@ import java.util.ArrayList;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final PostEventPublisher postEventPublisher;
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
-    public PostService(PostRepository postRepository, PostEventPublisher postEventPublisher) {
+
+    public PostService(PostRepository postRepository, CommentRepository commentRepository,
+            PostEventPublisher postEventPublisher) {
         this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
         this.postEventPublisher = postEventPublisher;
     }
 
@@ -82,6 +87,7 @@ public class PostService {
             throw new RuntimeException("Post not found with id: " + postId);
         }
         postRepository.deleteById(postId);
+        commentRepository.deleteByPostId(postId);
     }
 
     public Post addComment(String postId, Comment comment) {

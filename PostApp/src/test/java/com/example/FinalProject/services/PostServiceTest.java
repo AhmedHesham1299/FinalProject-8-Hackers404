@@ -2,6 +2,8 @@ package com.example.FinalProject.services;
 
 import com.example.FinalProject.criteria.SearchCriteria;
 import com.example.FinalProject.repositories.PostRepository;
+import com.example.FinalProject.repositories.CommentRepository;
+import com.example.FinalProject.events.PostEventPublisher;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.services.PostService;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,10 @@ public class PostServiceTest {
 
     @Mock
     private PostRepository postRepository;
+    @Mock
+    private CommentRepository commentRepository;
+    @Mock
+    private PostEventPublisher postEventPublisher;
 
     private PostService postService;
 
@@ -41,7 +47,7 @@ public class PostServiceTest {
                 LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31));
         criteriaAll = new SearchCriteria("k", Arrays.asList("t"), "a",
                 LocalDate.now().minusDays(5), LocalDate.now());
-        postService = new PostService(postRepository, null);
+        postService = new PostService(postRepository, commentRepository, postEventPublisher);
     }
 
     @Test
