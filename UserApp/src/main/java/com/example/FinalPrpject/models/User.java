@@ -29,6 +29,12 @@ public class User {
     @Column(nullable = false)
     private boolean isBanned;
 
+    @Column(nullable = false)
+    private boolean isPushEnabled = true;
+
+    @Column(nullable = false)
+    private boolean isEmailEnabled = true;
+
     @ElementCollection
     private List<String> warnings = new ArrayList<>();
 
@@ -116,6 +122,23 @@ public class User {
     public void setBanned(boolean banned) {
         isBanned = banned;
     }
+
+    public boolean isPushEnabled() {
+        return isPushEnabled;
+    }
+
+    public void setPushEnabled(boolean isPushEnabled) {
+        this.isPushEnabled = isPushEnabled;
+    }
+
+    public boolean isEmailEnabled() {
+        return isEmailEnabled;
+    }
+
+    public void setEmailEnabled(boolean isEmailEnabled) {
+        this.isEmailEnabled = isEmailEnabled;
+    }
+
     public List<String> getWarnings() {
         return warnings;
     }
@@ -129,6 +152,8 @@ public class User {
         this.email = builder.email;
         this.password = builder.password;
         this.isBanned = builder.isBanned;
+        this.isPushEnabled = builder.isPushEnabled;
+        this.isEmailEnabled = builder.isEmailEnabled;
         this.followers = builder.followers;
         this.following = builder.following;
         this.blockedUsers = builder.blockedUsers;
@@ -140,6 +165,8 @@ public class User {
         private String email;
         private String password;
         private boolean isBanned;
+        private boolean isPushEnabled = true;
+        private boolean isEmailEnabled = true;
         private List<String> warnings = new ArrayList<>();
         private Set<User> followers = new HashSet<>();
         private Set<User> following = new HashSet<>();
@@ -166,6 +193,15 @@ public class User {
             return this;
         }
 
+        public Builder isPushEnabled(boolean isPushEnabled) {
+            this.isPushEnabled = isPushEnabled;
+            return this;
+        }
+
+        public Builder isEmailEnabled(boolean isEmailEnabled) {
+            this.isEmailEnabled = isEmailEnabled;
+            return this;
+        }
 
         public Builder followers(Set<User> followers) {
             this.followers = followers;

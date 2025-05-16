@@ -7,6 +7,8 @@ public class UserResponse {
     private String username;
     private String email;
     private boolean isBanned;
+    private boolean isPushEnabled;
+    private boolean isEmailEnabled;
     private List<String> warnings;
     private List<Long> followingIds;
     private List<Long> followerIds;
@@ -19,6 +21,8 @@ public class UserResponse {
         this.email = user.getEmail();
         this.isBanned = user.isBanned();
         this.warnings = user.getWarnings();
+        this.isPushEnabled = user.isPushEnabled();
+        this.isEmailEnabled = user.isEmailEnabled();
         this.followingIds = user.getFollowing().stream().map(User::getId).toList();
         this.followerIds = user.getFollowers().stream().map(User::getId).toList();
         this.blockedUserIds = user.getBlockedUsers().stream()
@@ -56,5 +60,21 @@ public class UserResponse {
 
     public List<Long> getBlockedUserIds() {
         return blockedUserIds;
+    }
+
+    public boolean isPushEnabled() {
+        return isPushEnabled;
+    }
+
+    public void setPushEnabled(boolean isPushEnabled) {
+        this.isPushEnabled = isPushEnabled;
+    }
+
+    public boolean isEmailEnabled() {
+        return isEmailEnabled;
+    }
+
+    public void setEmailEnabled(boolean isEmailEnabled) {
+        this.isEmailEnabled = isEmailEnabled;
     }
 }
