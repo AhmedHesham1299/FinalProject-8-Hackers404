@@ -20,6 +20,7 @@ public class Notification {
     //  type, timestamp, content
     @Id
     private String id;
+    private String postID;
     private String senderID;
     private String receiverID;
     private String senderName;

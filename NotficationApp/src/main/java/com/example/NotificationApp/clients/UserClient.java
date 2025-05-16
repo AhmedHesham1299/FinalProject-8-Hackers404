@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 // TODO Change url to actual value
-@FeignClient(name = "user-service", url = "http://localhost:8091/user")
+@FeignClient(name = "user-service", url = "http://localhost:8091")
 public interface UserClient {
 
     // TODO Add getUserPreferences method in UserAppController

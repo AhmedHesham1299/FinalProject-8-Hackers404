@@ -1,5 +1,6 @@
 package com.example.NotificationApp.service;
 
+import com.ctc.wstx.shaded.msv_core.driver.textui.Debug;
 import com.example.NotificationApp.clients.UserClient;
 import com.example.NotificationApp.factory.NotificationHandlerFactory;
 import com.example.NotificationApp.model.Notification;
@@ -100,13 +101,26 @@ public class NotificationService {
     // TODO Listens to: following a user & reporting a user
     @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
     public void onNewNotification(Notification notification) {
+        NotificationPreferences preferences = null;
+        try {
+            preferences = userClient.getPreferences(notification.getReceiverID());
+        } catch (Exception ex) {
+            System.out.println("Failed to fetch notification preferences for user" + notification.getReceiverID() + ex.getMessage());
+            preferences = new NotificationPreferences(false, false); // default: don't allow all notifications
+        }
+
         String type = switch (notification.getType()) {
             case "REPORT", "FOLLOW" -> "Email";
             default -> "Push";
         };
 
-        NotificationHandler handler = notificationHandlerFactory.getHandler(type);
-        handler.sendNotification(notification);
+        if(type.equals("Email") && preferences.isEmailEnabled() ||
+                type.equals("Push") && preferences.isPushEnabled()) {
+            NotificationHandler handler = notificationHandlerFactory.getHandler(type);
+            handler.sendNotification(notification);
+        }
+
+        notificationRepository.save(notification);
     }
 
 
