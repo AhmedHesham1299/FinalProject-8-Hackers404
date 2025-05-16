@@ -53,7 +53,11 @@ public class CommentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
         
         Comment savedComment = commentRepository.save(comment);
-        
+        if (post.getComments() == null) {
+            post.setComments(new java.util.ArrayList<>());
+        }
+        post.getComments().add(savedComment);
+        postRepository.save(post);
         // Publish event
         commentEventPublisher.sendCommentCreatedEvent(
                 new CommentCreatedEvent(savedComment.getId(), savedComment.getPostId(), savedComment.getAuthorId()));
@@ -64,7 +68,7 @@ public class CommentService {
         return savedComment;
     }
 
-    @CacheEvict(value = "comments", key = "#comment.postId")
+    @CacheEvict(value = "comments", key = "#result.postId")
     public Comment updateComment(String id, Comment comment) {
         Comment existingComment = getCommentById(id);
         
@@ -72,7 +76,21 @@ public class CommentService {
         existingComment.setContent(comment.getContent());
         
         Comment updatedComment = commentRepository.save(existingComment);
-        
+        Post post = postRepository.findById(updatedComment.getPostId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        if (post.getComments() != null) {
+            for (int i = 0; i < post.getComments().size(); i++) {
+                Comment c = post.getComments().get(i);
+                if (c.getId().equals(updatedComment.getId())) {
+                    post.getComments().set(i, updatedComment);
+                    break;
+                }
+            }
+        } else {
+            post.setComments(new java.util.ArrayList<>());
+            post.getComments().add(updatedComment);
+        }
+        postRepository.save(post);
         // Publish event
         commentEventPublisher.sendCommentUpdatedEvent(
                 new CommentUpdatedEvent(updatedComment.getId(), updatedComment.getPostId(), updatedComment.getAuthorId()));
@@ -80,7 +98,7 @@ public class CommentService {
         return updatedComment;
     }
 
-    @CacheEvict(value = "comments", key = "#postId")
+    @CacheEvict(value = "comments", key = "#root.target.getCommentById(#id).postId", beforeInvocation = true)
     public void deleteComment(String id) {
         Comment comment = getCommentById(id);
         String postId = comment.getPostId();
