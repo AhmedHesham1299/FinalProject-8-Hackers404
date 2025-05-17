@@ -1,19 +1,12 @@
 package com.example.NotificationApp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Document(collection = "notifications")
 public class Notification {
     // TODO Include attributes: senderID, receiverID, senderName, receiverName, receiverEmail,
@@ -21,12 +14,7 @@ public class Notification {
     @Id
     private String id;
     private String postID;
-
-
-
     private String senderID;
-
-
     private String receiverID;
     private String senderName;
     private String receiverName;
@@ -36,6 +24,7 @@ public class Notification {
     private LocalDateTime timestamp;
     private boolean read;
 
+    public Notification() {}
 
     public Notification(String postID, String senderID, String receiverID, String senderName, String receiverName, String receiverEmail, String content, String type, LocalDateTime timestamp, boolean read) {
         this.postID = postID;
@@ -49,8 +38,6 @@ public class Notification {
         this.timestamp = timestamp;
         this.read = read;
     }
-
-
 
     public String getReceiverID() {
         return receiverID;
