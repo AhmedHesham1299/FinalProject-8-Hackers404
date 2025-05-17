@@ -1,60 +1,50 @@
-spring:
-  application:
-    name: PostApp
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/postdb
-    redis:
-      host: localhost
-      port: 6379
-  cache:
-    type: redis
-    redis:
-      cache-null-values: false
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        retry:
-          enabled: true
-          initial-interval: 5000
-          max-attempts: 3
-          multiplier: 2
-          max-interval: 30000
-  cloud:
-    compatibility-verifier:
-      enabled: false
-
-server:
-  port: 8081
-
-# Disable Eureka client for local development
-eureka:
-  client:
-    enabled: false
-    register-with-eureka: false
-    fetch-registry: false
-  server:
-    enable-self-preservation: false
-
-logging:
-  level:
-    com.example.FinalProject: INFO
-    com.example.FinalProject.events: INFO
-    org.springframework.data.mongodb: WARN
-    org.springframework.amqp: INFO
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-  endpoint:
-    health:
-      show-details: always
-
-
+#spring:
+#  application:
+#    name: PostApp
+#  data:
+#    mongodb:
+#      uri: mongodb://localhost:27017/postdb
+#    redis:
+#      host: localhost
+#      port: 6379
+#  cache:
+#    type: redis
+#    redis:
+#      cache-null-values: false
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+#    listener:
+#      simple:
+#        retry:
+#          enabled: true
+#          initial-interval: 5000
+#          max-attempts: 3
+#          multiplier: 2
+#          max-interval: 30000
+#  cloud:
+#    compatibility-verifier:
+#      enabled: false
+#
+#server:
+#  port: 8081
+#
+#logging:
+#  level:
+#    com.example.FinalProject: INFO
+#    com.example.FinalProject.events: INFO
+#    org.springframework.data.mongodb: WARN
+#    org.springframework.amqp: INFO
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info,metrics
+#  endpoint:
+#    health:
+#      show-details: always
+#
 #spring.profiles.active=k8s

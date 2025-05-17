@@ -127,8 +127,15 @@ public class PostService {
     }
 
     @RabbitListener(queues = RabbitMQConfig.POST_QUEUE)
-    public void receivePost(String id) {
-        System.out.println("Post received: " + id);
+    public void receivePost(String title,String content,String authorID) {
+        System.out.println("Post content received from user service: " + content);
+
+        // Temporary hardcoded author or parse a DTO if needed
+        Post post = new Post();
+        post.setTitle("Auto-generated Post");
+        post.setContent(content);
+        post.setAuthorId("user-via-rabbit"); // Or extract from a proper message DTO
+        createPost(post);
     }
 
     @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
