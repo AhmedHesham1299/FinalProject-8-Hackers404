@@ -1,7 +1,7 @@
 package com.example.FinalProject.observers;
 
-import com.example.FinalProject.events.NotificationEventPublisher;
-import com.example.FinalProject.events.dtos.NotificationEvent;
+import com.example.FinalProject.services.NotificationEventPublisher;
+import com.example.FinalProject.events.dtos.Notification;
 import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Like;
 import com.example.FinalProject.models.Post;
@@ -35,7 +35,7 @@ public class NotificationPostObserverTest {
     @BeforeEach
     void setUp() {
         observer = new NotificationPostObserver(postObservable, notificationEventPublisher);
-        
+
         // Setup test post
         testPost = new Post();
         testPost.setId("post123");
@@ -43,12 +43,12 @@ public class NotificationPostObserverTest {
         testPost.setContent("Test content");
         testPost.setAuthorId("author123");
         testPost.setCreatedAt(LocalDateTime.now());
-        
+
         // Setup test comment
         testComment = new Comment("Test comment content", "commenter456", "post123");
         testComment.setId("comment123");
         testComment.setCreatedAt(LocalDateTime.now());
-        
+
         // Setup test like
         testLike = new Like("liker789", "post123", "post", true);
         testLike.setId("like123");
@@ -59,7 +59,7 @@ public class NotificationPostObserverTest {
     void init_shouldRegisterObserverWithObservable() {
         // When
         observer.init();
-        
+
         // Then
         verify(postObservable).addObserver(observer);
     }
@@ -68,19 +68,18 @@ public class NotificationPostObserverTest {
     void onCommentAdded_shouldCreateNotification_WhenCommentByDifferentUser() {
         // Given
         // Post author = author123, comment author = commenter456 (different)
-        
+
         // When
         observer.onCommentAdded(testPost, testComment);
-        
+
         // Then
-        ArgumentCaptor<NotificationEvent> eventCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
-        verify(notificationEventPublisher).sendNotificationEvent(eventCaptor.capture());
-        
-        NotificationEvent capturedEvent = eventCaptor.getValue();
-        assertEquals("author123", capturedEvent.getUserId()); // Notification sent to post author
-        assertEquals("New Comment", capturedEvent.getTitle());
-        assertTrue(capturedEvent.getMessage().contains("Test Post Title"));
-        assertEquals("/posts/post123", capturedEvent.getLink());
+        ArgumentCaptor<Notification> eventCaptor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationEventPublisher).sendNotification(eventCaptor.capture());
+
+        Notification capturedEvent = eventCaptor.getValue();
+        assertEquals("author123", capturedEvent.getReceiverID());
+        assertEquals("commenter456", capturedEvent.getSenderID());
+        assertTrue(capturedEvent.getContent().contains("Test Post Title"));
         assertEquals("COMMENT", capturedEvent.getType());
     }
 
@@ -89,31 +88,30 @@ public class NotificationPostObserverTest {
         // Given
         Comment selfComment = new Comment("Self comment", "author123", "post123");
         selfComment.setId("selfComment123");
-        
+
         // When
         observer.onCommentAdded(testPost, selfComment);
-        
+
         // Then
-        verify(notificationEventPublisher, never()).sendNotificationEvent(any());
+        verify(notificationEventPublisher, never()).sendNotification(any());
     }
 
     @Test
     void onPostLiked_shouldCreateNotification_WhenLikedByDifferentUser() {
         // Given
         // Post author = author123, liker = liker789 (different)
-        
+
         // When
         observer.onPostLiked(testPost, testLike);
-        
+
         // Then
-        ArgumentCaptor<NotificationEvent> eventCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
-        verify(notificationEventPublisher).sendNotificationEvent(eventCaptor.capture());
-        
-        NotificationEvent capturedEvent = eventCaptor.getValue();
-        assertEquals("author123", capturedEvent.getUserId()); // Notification sent to post author
-        assertEquals("Post liked", capturedEvent.getTitle());
-        assertTrue(capturedEvent.getMessage().contains("liked"));
-        assertEquals("/posts/post123", capturedEvent.getLink());
+        ArgumentCaptor<Notification> eventCaptor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationEventPublisher).sendNotification(eventCaptor.capture());
+
+        Notification capturedEvent = eventCaptor.getValue();
+        assertEquals("author123", capturedEvent.getReceiverID());
+        assertEquals("liker789", capturedEvent.getSenderID());
+        assertTrue(capturedEvent.getContent().contains("liked"));
         assertEquals("LIKE", capturedEvent.getType());
     }
 
@@ -122,17 +120,17 @@ public class NotificationPostObserverTest {
         // Given
         Like dislike = new Like("liker789", "post123", "post", false);
         dislike.setId("dislike123");
-        
+
         // When
         observer.onPostLiked(testPost, dislike);
-        
+
         // Then
-        ArgumentCaptor<NotificationEvent> eventCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
-        verify(notificationEventPublisher).sendNotificationEvent(eventCaptor.capture());
-        
-        NotificationEvent capturedEvent = eventCaptor.getValue();
-        assertEquals("Post disliked", capturedEvent.getTitle());
-        assertTrue(capturedEvent.getMessage().contains("disliked"));
+        ArgumentCaptor<Notification> eventCaptor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationEventPublisher).sendNotification(eventCaptor.capture());
+
+        Notification capturedEvent = eventCaptor.getValue();
+        assertTrue(capturedEvent.getContent().contains("disliked"));
+        assertEquals("LIKE", capturedEvent.getType());
     }
 
     @Test
@@ -140,12 +138,12 @@ public class NotificationPostObserverTest {
         // Given
         Like selfLike = new Like("author123", "post123", "post", true);
         selfLike.setId("selfLike123");
-        
+
         // When
         observer.onPostLiked(testPost, selfLike);
-        
+
         // Then
-        verify(notificationEventPublisher, never()).sendNotificationEvent(any());
+        verify(notificationEventPublisher, never()).sendNotification(any());
     }
 
     @Test
@@ -153,19 +151,18 @@ public class NotificationPostObserverTest {
         // Given
         Like commentLike = new Like("liker789", "comment123", "comment", true);
         commentLike.setId("commentLike123");
-        
+
         // When
         observer.onCommentLiked(testComment, commentLike);
-        
+
         // Then
-        ArgumentCaptor<NotificationEvent> eventCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
-        verify(notificationEventPublisher).sendNotificationEvent(eventCaptor.capture());
-        
-        NotificationEvent capturedEvent = eventCaptor.getValue();
-        assertEquals("commenter456", capturedEvent.getUserId()); // Notification sent to comment author
-        assertEquals("Comment liked", capturedEvent.getTitle());
-        assertTrue(capturedEvent.getMessage().contains("liked"));
-        assertEquals("/posts/post123", capturedEvent.getLink());
+        ArgumentCaptor<Notification> eventCaptor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationEventPublisher).sendNotification(eventCaptor.capture());
+
+        Notification capturedEvent = eventCaptor.getValue();
+        assertEquals("commenter456", capturedEvent.getReceiverID());
+        assertEquals("liker789", capturedEvent.getSenderID());
+        assertTrue(capturedEvent.getContent().contains("liked"));
         assertEquals("LIKE", capturedEvent.getType());
     }
 
@@ -174,11 +171,11 @@ public class NotificationPostObserverTest {
         // Given
         Like selfLike = new Like("commenter456", "comment123", "comment", true);
         selfLike.setId("selfCommentLike123");
-        
+
         // When
         observer.onCommentLiked(testComment, selfLike);
-        
+
         // Then
-        verify(notificationEventPublisher, never()).sendNotificationEvent(any());
+        verify(notificationEventPublisher, never()).sendNotification(any());
     }
-} 
+}

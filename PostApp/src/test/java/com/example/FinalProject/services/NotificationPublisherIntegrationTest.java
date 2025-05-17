@@ -1,9 +1,7 @@
 package com.example.FinalProject.services;
 
 import com.example.FinalProject.config.AppRabbitMQConfig;
-import com.example.FinalProject.events.dtos.CommentAddedEvent;
-import com.example.FinalProject.events.dtos.PostLikedEvent;
-import com.example.FinalProject.events.dtos.UserTaggedInPostEvent;
+import com.example.FinalProject.events.dtos.Notification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.Binding;
@@ -64,68 +62,26 @@ public class NotificationPublisherIntegrationTest {
     }
 
     @Test
-    void whenPublishCommentAddedEvent_thenMessageReceived() {
-        // given
-        CommentAddedEvent event = new CommentAddedEvent(
-                UUID.randomUUID().toString(),
-                "COMMENT_ADDED",
-                LocalDateTime.now(),
+    void whenPublishNotification_thenMessageReceived() {
+        LocalDateTime now = LocalDateTime.now();
+        Notification event = new Notification(
                 "post-123",
-                "comment-abc",
                 "user-xyz",
                 "author-123",
-                "hello preview");
-
-        // when
-        publisher.sendCommentAddedEvent(event);
-
-        // then
+                null,
+                null,
+                "hello preview",
+                "COMMENT",
+                now);
+        publisher.sendNotification(event);
         Object received = rabbitTemplate.receiveAndConvert(testQueue.getName(), 5000);
-        assertThat(received).isInstanceOf(CommentAddedEvent.class);
-        CommentAddedEvent receivedEvent = (CommentAddedEvent) received;
-        assertThat(receivedEvent.eventId()).isEqualTo(event.eventId());
-    }
-
-    @Test
-    void whenPublishPostLikedEvent_thenMessageReceived() {
-        // given
-        PostLikedEvent event = new PostLikedEvent(
-                UUID.randomUUID().toString(),
-                "POST_LIKED",
-                LocalDateTime.now(),
-                "post-456",
-                "liker-xyz",
-                "author-123");
-
-        // when
-        publisher.sendPostLikedEvent(event);
-
-        // then
-        Object received = rabbitTemplate.receiveAndConvert(testQueue.getName(), 5000);
-        assertThat(received).isInstanceOf(PostLikedEvent.class);
-        PostLikedEvent receivedEvent = (PostLikedEvent) received;
-        assertThat(receivedEvent.eventId()).isEqualTo(event.eventId());
-    }
-
-    @Test
-    void whenPublishUserTaggedEvent_thenMessageReceived() {
-        // given
-        UserTaggedInPostEvent event = new UserTaggedInPostEvent(
-                UUID.randomUUID().toString(),
-                "USER_TAGGED_IN_POST",
-                LocalDateTime.now(),
-                "post-789",
-                "tagger-abc",
-                "tagged-xyz",
-                "author-123");
-
-        // when
-        publisher.sendUserTaggedEvent(event);
-
-        // then
-        Object received = rabbitTemplate.receiveAndConvert(testQueue.getName(), 5000);
-        assertThat(received).isInstanceOf(UserTaggedInPostEvent.class);
-        UserTaggedInPostEvent receivedEvent = (UserTaggedInPostEvent) received;
-        assertThat(receivedEvent.eventId()).isEqualTo(event.eventId());
+        assertThat(received).isInstanceOf(Notification.class);
+        Notification receivedEvent = (Notification) received;
+        assertThat(receivedEvent.getPostID()).isEqualTo(event.getPostID());
+        assertThat(receivedEvent.getSenderID()).isEqualTo(event.getSenderID());
+        assertThat(receivedEvent.getReceiverID()).isEqualTo(event.getReceiverID());
+        assertThat(receivedEvent.getContent()).isEqualTo(event.getContent());
+        assertThat(receivedEvent.getType()).isEqualTo(event.getType());
+        assertThat(receivedEvent.getTimestamp()).isEqualTo(now);
     }
 }

@@ -1,15 +1,15 @@
 package com.example.FinalProject.observers;
 
-import com.example.FinalProject.events.NotificationEventPublisher;
-import com.example.FinalProject.events.dtos.NotificationEvent;
+import com.example.FinalProject.services.NotificationEventPublisher;
+import com.example.FinalProject.events.dtos.Notification;
 import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Like;
 import com.example.FinalProject.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
+import java.time.LocalDateTime;
 
 @Component
 public class NotificationPostObserver implements PostObserver {
@@ -19,7 +19,7 @@ public class NotificationPostObserver implements PostObserver {
 
     @Autowired
     public NotificationPostObserver(PostObservable postObservable,
-            @Qualifier("baseNotificationEventPublisher") NotificationEventPublisher notificationEventPublisher) {
+            NotificationEventPublisher notificationEventPublisher) {
         this.postObservable = postObservable;
         this.notificationEventPublisher = notificationEventPublisher;
     }
@@ -35,14 +35,16 @@ public class NotificationPostObserver implements PostObserver {
         if (post.getAuthorId().equals(comment.getAuthorId())) {
             return;
         }
-
-        notificationEventPublisher.sendNotificationEvent(
-                new NotificationEvent(
+        notificationEventPublisher.sendNotification(
+                new Notification(
+                        post.getId(),
+                        comment.getAuthorId(),
                         post.getAuthorId(),
-                        "New Comment",
+                        null,
+                        null,
                         "Your post '" + post.getTitle() + "' has a new comment",
-                        "/posts/" + post.getId(),
-                        "COMMENT"));
+                        "COMMENT",
+                        LocalDateTime.now()));
     }
 
     @Override
@@ -51,16 +53,17 @@ public class NotificationPostObserver implements PostObserver {
         if (post.getAuthorId().equals(like.getUserId())) {
             return;
         }
-
         String action = like.isLike() ? "liked" : "disliked";
-
-        notificationEventPublisher.sendNotificationEvent(
-                new NotificationEvent(
+        notificationEventPublisher.sendNotification(
+                new Notification(
+                        post.getId(),
+                        like.getUserId(),
                         post.getAuthorId(),
-                        "Post " + action,
+                        null,
+                        null,
                         "Someone has " + action + " your post '" + post.getTitle() + "'",
-                        "/posts/" + post.getId(),
-                        "LIKE"));
+                        "LIKE",
+                        LocalDateTime.now()));
     }
 
     @Override
@@ -69,15 +72,16 @@ public class NotificationPostObserver implements PostObserver {
         if (comment.getAuthorId().equals(like.getUserId())) {
             return;
         }
-
         String action = like.isLike() ? "liked" : "disliked";
-
-        notificationEventPublisher.sendNotificationEvent(
-                new NotificationEvent(
+        notificationEventPublisher.sendNotification(
+                new Notification(
+                        comment.getPostId(),
+                        like.getUserId(),
                         comment.getAuthorId(),
-                        "Comment " + action,
+                        null,
+                        null,
                         "Someone has " + action + " your comment",
-                        "/posts/" + comment.getPostId(),
-                        "LIKE"));
+                        "LIKE",
+                        LocalDateTime.now()));
     }
 }

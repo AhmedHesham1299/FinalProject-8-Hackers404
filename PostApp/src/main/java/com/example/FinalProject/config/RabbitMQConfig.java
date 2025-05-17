@@ -2,7 +2,6 @@ package com.example.FinalProject.config;
 
 import com.example.FinalProject.events.CommentEventPublisher;
 import com.example.FinalProject.events.LikeEventPublisher;
-import com.example.FinalProject.events.NotificationEventPublisher;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.context.annotation.Bean;
@@ -68,7 +67,7 @@ public class RabbitMQConfig {
 
     @Bean
     public TopicExchange notificationEventsExchange() {
-        return new TopicExchange(NotificationEventPublisher.NOTIFICATION_EXCHANGE);
+        return new TopicExchange(EXCHANGE);
     }
 
     @Bean

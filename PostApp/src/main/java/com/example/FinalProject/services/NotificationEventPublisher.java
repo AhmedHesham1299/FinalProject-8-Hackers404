@@ -3,9 +3,7 @@ package com.example.FinalProject.services;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import com.example.FinalProject.config.AppRabbitMQConfig;
-import com.example.FinalProject.events.dtos.CommentAddedEvent;
-import com.example.FinalProject.events.dtos.PostLikedEvent;
-import com.example.FinalProject.events.dtos.UserTaggedInPostEvent;
+import com.example.FinalProject.events.dtos.Notification;
 
 @Service
 public class NotificationEventPublisher {
@@ -15,24 +13,10 @@ public class NotificationEventPublisher {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendCommentAddedEvent(CommentAddedEvent event) {
+    public void sendNotification(Notification notification) {
         rabbitTemplate.convertAndSend(
                 AppRabbitMQConfig.TARGET_APP_EXCHANGE,
                 AppRabbitMQConfig.TARGET_NOTIFICATION_ROUTING_KEY,
-                event);
-    }
-
-    public void sendPostLikedEvent(PostLikedEvent event) {
-        rabbitTemplate.convertAndSend(
-                AppRabbitMQConfig.TARGET_APP_EXCHANGE,
-                AppRabbitMQConfig.TARGET_NOTIFICATION_ROUTING_KEY,
-                event);
-    }
-
-    public void sendUserTaggedEvent(UserTaggedInPostEvent event) {
-        rabbitTemplate.convertAndSend(
-                AppRabbitMQConfig.TARGET_APP_EXCHANGE,
-                AppRabbitMQConfig.TARGET_NOTIFICATION_ROUTING_KEY,
-                event);
+                notification);
     }
 }

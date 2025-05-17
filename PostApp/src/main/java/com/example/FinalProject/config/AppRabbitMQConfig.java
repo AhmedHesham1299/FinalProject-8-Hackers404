@@ -6,7 +6,7 @@ import org.springframework.amqp.core.TopicExchange;
 
 @Configuration
 public class AppRabbitMQConfig {
-    public static final String TARGET_APP_EXCHANGE = "app_exchange";
+    public static final String TARGET_APP_EXCHANGE = "shared_exchange";
     public static final String TARGET_NOTIFICATION_ROUTING_KEY = "notification_routing";
 
     @Bean

@@ -3,10 +3,9 @@ package com.example.FinalProject.services;
 import org.springframework.stereotype.Service;
 import com.example.FinalProject.repositories.PostRepository;
 import com.example.FinalProject.models.Post;
-import com.example.FinalProject.events.dtos.UserTaggedInPostEvent;
+import com.example.FinalProject.events.dtos.Notification;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class TagService {
@@ -26,15 +25,16 @@ public class TagService {
         post.getTags().add(taggedUserId);
         Post updated = postRepository.save(post);
 
-        UserTaggedInPostEvent event = new UserTaggedInPostEvent(
-                UUID.randomUUID().toString(),
-                "USER_TAGGED_IN_POST",
-                LocalDateTime.now(),
+        Notification notification = new Notification(
                 postId,
                 taggerId,
                 taggedUserId,
-                post.getAuthorId());
-        notificationEventPublisher.sendUserTaggedEvent(event);
+                null,
+                null,
+                "You were tagged in post '" + post.getTitle() + "'",
+                "TAG",
+                LocalDateTime.now());
+        notificationEventPublisher.sendNotification(notification);
         return updated;
     }
 }
