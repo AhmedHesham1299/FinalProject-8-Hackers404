@@ -113,10 +113,15 @@ public class NotificationService {
             default -> "Push";
         };
 
-        if(type.equals("Email") && preferences.isEmailEnabled() ||
-                type.equals("Push") && preferences.isPushEnabled()) {
-            NotificationHandler handler = notificationHandlerFactory.getHandler(type);
-            handler.sendNotification(notification);
+        try{
+            if(type.equals("Email") && preferences.isEmailEnabled() ||
+                    type.equals("Push") && preferences.isPushEnabled()) {
+                NotificationHandler handler = notificationHandlerFactory.getHandler(type);
+                handler.sendNotification(notification);
+            }
+        }
+        catch (Exception ex){
+            System.out.println("Failed to send notification" + ex.getMessage());
         }
 
         notificationRepository.save(notification);

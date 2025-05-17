@@ -18,10 +18,13 @@ public class EmailNotificationHandler implements NotificationHandler {
     public void sendNotification(Notification notification) {
         String userEmail = notification.getReceiverEmail();
 
+        String postUrl = "http://post-app:8081/api/posts/" + notification.getId();
+
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(userEmail);
         mailMessage.setSubject("New " + notification.getType().toLowerCase() + " notification");
-        mailMessage.setText(notification.getContent());
+        mailMessage.setText("User " + notification.getSenderName() + "has" + notification.getContent() + "you. /n" +
+                postUrl);
 
         mailSender.send(mailMessage);
     }
