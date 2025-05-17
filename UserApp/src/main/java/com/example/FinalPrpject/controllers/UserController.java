@@ -162,14 +162,15 @@ public class UserController {
     @PostMapping("/{userId}/post")
     public ResponseEntity<String> createPost(@PathVariable Long userId, @RequestBody Map<String, String> body) {
         String content = body.get("content");
+        String title = body.get("title");
 
-        if (content == null || content.isBlank()) {
+        if (content == null || content.isBlank() || (title == null || title.isBlank())) {
             return ResponseEntity.badRequest().body("Post content is required");
         }
 
         userService.getUserById(userId);
 
-        userProducer.createPost(userId, content);
+        userProducer.createPost(userId, content, title);
 
         return ResponseEntity.ok("Post request submitted successfully.");
     }
