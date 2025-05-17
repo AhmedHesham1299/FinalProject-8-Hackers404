@@ -1,6 +1,7 @@
 package com.example.FinalPrpject.rabbitMQ;
 
 import com.example.FinalPrpject.DTO.Notification;
+import com.example.FinalPrpject.DTO.Post;
 import com.example.FinalPrpject.models.User;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,8 @@ public class UserProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void createPost(Long userId, String post) {
+    public void createPost(Long userId, String title, String content) {
+        Post post = new Post(userId, content, title);
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.EXCHANGE,
                 RabbitMQConfig.POST_ROUTING,
