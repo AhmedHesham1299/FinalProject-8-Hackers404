@@ -8,6 +8,9 @@ data:
   MONGODB_PORT: "27017"
   MONGODB_POST_DATABASE: "postdb"
   MONGODB_NOTIFICATION_DATABASE: "notificationdb"
+  MONGODB_URI_NOTIFICATION: "mongodb://mongodb:password@mongodb:27017/notificationdb?authSource=admin"
+  MONGODB_URI_POST: "mongodb://mongodb:password@mongodb:27017/postdb?authSource=admin"
+
 
   # PostgreSQL Configuration
   POSTGRES_HOST: "postgres"  # Use the service name instead of statefulset pod name
