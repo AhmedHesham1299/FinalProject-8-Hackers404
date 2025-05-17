@@ -100,13 +100,31 @@ public class NotificationService {
     // TODO Listens to: following a user & reporting a user
     @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
     public void onNewNotification(Notification notification) {
+        NotificationPreferences preferences = null;
+        try {
+            preferences = userClient.getPreferences(notification.getReceiverID());
+        } catch (Exception ex) {
+            System.out.println("Failed to fetch notification preferences for user" + notification.getReceiverID() + ex.getMessage());
+            preferences = new NotificationPreferences(false, false); // default: don't allow all notifications
+        }
+
         String type = switch (notification.getType()) {
-            case "REPORT", "FOLLOW" -> "Email";
+            case "REPORT", "FOLLOW", "UNFOLLOW", "BLOCK", "UNBLOCK" -> "Email";
             default -> "Push";
         };
 
-        NotificationHandler handler = notificationHandlerFactory.getHandler(type);
-        handler.sendNotification(notification);
+        try{
+            if(type.equals("Email") && preferences.isEmailEnabled() ||
+                    type.equals("Push") && preferences.isPushEnabled()) {
+                NotificationHandler handler = notificationHandlerFactory.getHandler(type);
+                handler.sendNotification(notification);
+            }
+        }
+        catch (Exception ex){
+            System.out.println("Failed to send notification" + ex.getMessage());
+        }
+
+        notificationRepository.save(notification);
     }
 
 
