@@ -63,7 +63,7 @@ public class NotificationController {
         return ResponseEntity.ok(preferences);
     }
 
-    @PostMapping("preferences/{id}")
+    @PostMapping("/preferences/{id}")
     public ResponseEntity<String> updatePreferences(@PathVariable String id, @RequestBody NotificationPreferences preferences) {
         String updated = notificationService.updatePreferences(id, preferences);
         return ResponseEntity.ok(updated);

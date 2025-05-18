@@ -25,8 +25,8 @@ cd ..
 # Build and push NotficationApp
 cd NotficationApp
 ./mvnw clean package -DskipTests
-docker build -t $DOCKER_USER/notfication-app:latest .
-docker push $DOCKER_USER/notfication-app:latest
+docker build -t $DOCKER_USER/notification-app:latest .
+docker push $DOCKER_USER/notification-app:latest
 cd ..
 
 # Build and push ModeratorApp

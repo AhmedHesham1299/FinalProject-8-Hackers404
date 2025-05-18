@@ -1,5 +1,6 @@
 package com.example.FinalPrpject.controllers;
 
+import com.example.FinalPrpject.DTO.NotificationPreferences;
 import com.example.FinalPrpject.models.BanRequest;
 import com.example.FinalPrpject.models.User;
 import com.example.FinalPrpject.models.UserResponse;
@@ -58,14 +59,14 @@ public class UserController {
     @PostMapping("/{userId}/follow/{targetId}")
     public ResponseEntity<String> followUser(@PathVariable Long userId, @PathVariable Long targetId) {
         userService.followUser(userId, targetId);
-        userProducer.sendNotificationEvent(userId, "followed user " + targetId);
+        userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(targetId), "followed user " + targetId, "FOLLOW");
         return ResponseEntity.ok("Followed user " + targetId);
     }
 
     @PostMapping("/{userId}/unfollow/{targetId}")
     public ResponseEntity<String> unfollowUser(@PathVariable Long userId, @PathVariable Long targetId) {
         userService.unfollowUser(userId, targetId);
-        userProducer.sendNotificationEvent(userId, "unfollowed user " + targetId);
+        userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(targetId), "unfollowed user " + targetId, "UNFOLLOW");
         return ResponseEntity.ok("Unfollowed user " + targetId);
     }
 
@@ -73,14 +74,14 @@ public class UserController {
     @PostMapping("/{userId}/block/{blockedUserId}")
     public ResponseEntity<String> blockUser(@PathVariable Long userId, @PathVariable Long blockedUserId) {
         userService.blockUser(userId, blockedUserId);
-        userProducer.sendNotificationEvent(userId, "blocked user " + blockedUserId);
+        userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(blockedUserId), "blocked user " + blockedUserId, "BLOCK");
         return ResponseEntity.ok("Blocked user " + blockedUserId);
     }
 
     @PostMapping("/{userId}/unblock/{blockedUserId}")
     public ResponseEntity<String> unBlockUser(@PathVariable Long userId, @PathVariable Long blockedUserId) {
         userService.unBlockUser(userId, blockedUserId);
-        userProducer.sendNotificationEvent(userId, "unblocked user " + blockedUserId);
+        userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(blockedUserId), "unblocked user " + blockedUserId, "UNBLOCK");
         return ResponseEntity.ok("Unblocked user " + blockedUserId);
     }
 
@@ -90,8 +91,20 @@ public class UserController {
                                              @RequestBody Map<String, String> body) {
         String reason = body.get("reason");
         userService.reportUser(reporterId, reportedId, reason);
-        userProducer.sendNotificationEvent(reporterId, "reported user " + reportedId + " for: " + reason);
+        userProducer.sendNotificationEvent(userService.getUserById(reporterId), userService.getUserById(reportedId), "reported user " + reportedId + " for: " + reason, "REPORT");
         return ResponseEntity.ok("User " + reportedId + " reported for: " + reason);
+    }
+
+    @GetMapping("/{userId}/preferences")
+    public ResponseEntity<NotificationPreferences> getPreferences(@PathVariable Long userId) {
+        User user = userService.getUserById(userId);
+        return ResponseEntity.ok(new NotificationPreferences(user.isPushEnabled(), user.isEmailEnabled()));
+    }
+
+    @PutMapping("/{userId}/preferences")
+    public ResponseEntity<Boolean> updatePreferences(@PathVariable Long userId,
+                                                     @RequestBody NotificationPreferences preferences) {
+        return ResponseEntity.ok(userService.updatePreferences(userId, preferences));
     }
 
     @PutMapping("/{id}/ban")
@@ -149,14 +162,15 @@ public class UserController {
     @PostMapping("/{userId}/post")
     public ResponseEntity<String> createPost(@PathVariable Long userId, @RequestBody Map<String, String> body) {
         String content = body.get("content");
+        String title = body.get("title");
 
-        if (content == null || content.isBlank()) {
+        if (content == null || content.isBlank() || (title == null || title.isBlank())) {
             return ResponseEntity.badRequest().body("Post content is required");
         }
 
         userService.getUserById(userId);
 
-        userProducer.createPost(userId, content);
+        userProducer.createPost(userId, content, title);
 
         return ResponseEntity.ok("Post request submitted successfully.");
     }

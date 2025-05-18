@@ -1,37 +1,29 @@
 package com.example.NotificationApp.model;
 
 public class NotificationPreferences {
-    private boolean comment;
-    private boolean follow;
-    private boolean tag;
+    private boolean isEmailEnabled;
+    private boolean isPushEnabled;
 
-    public NotificationPreferences(boolean comment, boolean follow, boolean tag) {
-        this.comment = comment;
-        this.follow = follow;
-        this.tag = tag;
+    public NotificationPreferences() {}
+
+    public NotificationPreferences(boolean isEmailEnabled, boolean isPushEnabled) {
+        this.isEmailEnabled = isEmailEnabled;
+        this.isPushEnabled = isPushEnabled;
     }
 
-    public boolean isComment() {
-        return comment;
+    public boolean isPushEnabled() {
+        return isPushEnabled;
     }
 
-    public void setComment(boolean comment) {
-        this.comment = comment;
+    public void setPushEnabled(boolean pushEnabled) {
+        isPushEnabled = pushEnabled;
     }
 
-    public boolean isFollow() {
-        return follow;
+    public boolean isEmailEnabled() {
+        return isEmailEnabled;
     }
 
-    public void setFollow(boolean follow) {
-        this.follow = follow;
-    }
-
-    public boolean isTag() {
-        return tag;
-    }
-
-    public void setTag(boolean tag) {
-        this.tag = tag;
+    public void setEmailEnabled(boolean emailEnabled) {
+        isEmailEnabled = emailEnabled;
     }
 }

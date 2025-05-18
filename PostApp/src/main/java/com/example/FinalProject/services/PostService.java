@@ -2,6 +2,7 @@ package com.example.FinalProject.services;
 
 import com.example.FinalProject.config.RabbitMQConfig;
 import com.example.FinalProject.criteria.SearchCriteria;
+import com.example.FinalProject.dtos.PostMessage;
 import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.repositories.PostRepository;
@@ -127,14 +128,12 @@ public class PostService {
     }
 
     @RabbitListener(queues = RabbitMQConfig.POST_QUEUE)
-    public void receivePost(String title,String content,String authorID) {
-        System.out.println("Post content received from user service: " + content);
-
-        // Temporary hardcoded author or parse a DTO if needed
+    public void receivePost(PostMessage postMessage) {
+        System.out.println("Post content received from user service: " + postMessage.getContent());
         Post post = new Post();
-        post.setTitle("Auto-generated Post");
-        post.setContent(content);
-        post.setAuthorId("user-via-rabbit"); // Or extract from a proper message DTO
+        post.setTitle(postMessage.getTitle());
+        post.setContent(postMessage.getContent());
+        post.setAuthorId(postMessage.getUserId().toString());
         createPost(post);
     }
 
