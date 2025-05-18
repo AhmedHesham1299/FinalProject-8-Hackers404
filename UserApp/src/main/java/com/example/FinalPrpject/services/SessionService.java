@@ -34,7 +34,7 @@ public class SessionService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    @Cacheable(value = "sessions", key = "#userId")
+    @Cacheable(value = "sessions", key = "#userId", unless = "#result == null")
     public Optional<Session> getSessionByUserId(Long userId) {
         return sessionRepository.findByUserId(userId);
     }

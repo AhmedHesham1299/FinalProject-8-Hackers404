@@ -79,8 +79,14 @@ public class UserService {
     }
 
     public void followUser(Long userId, Long targetId) {
+        if(userId.equals(targetId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot follow yourself");
+        }
         User user = getUserById(userId);
         User target = getUserById(targetId);
+        if(user.getFollowing().contains(target)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You are already following User "+target.getId() );
+        }
         user.getFollowing().add(target);
         target.getFollowers().add(user);
         userRepository.save(user);
@@ -88,8 +94,14 @@ public class UserService {
     }
 
     public void unfollowUser(Long userId, Long targetId) {
+        if(userId.equals(targetId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot unfollow yourself");
+        }
         User user = getUserById(userId);
         User target = getUserById(targetId);
+        if(!user.getFollowing().contains(target)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You are not following User "+target.getId() );
+        }
         user.getFollowing().remove(target);
         target.getFollowers().remove(user);
         userRepository.save(user);
@@ -97,18 +109,33 @@ public class UserService {
     }
 
     public void blockUser(Long userId, Long blockedUserId) {
+        if(userId.equals(blockedUserId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot block yourself");
+        }
         User user = getUserById(userId);
         User blocked = getUserById(blockedUserId);
+        if(user.getBlockedUsers().contains(blocked)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You already blocked "+blocked.getId() );
+        }
         user.getBlockedUsers().add(blocked);
         userRepository.save(user);
     }
     public void unBlockUser(Long userId, Long blockedUserId) {
+        if(userId.equals(blockedUserId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot unblock yourself");
+        }
         User user = getUserById(userId);
         User blocked = getUserById(blockedUserId);
+        if(!user.getBlockedUsers().contains(blocked)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User "+blocked.getId()+" is not blocked" );
+        }
         user.getBlockedUsers().remove(blocked);
         userRepository.save(user);
     }
     public void reportUser(Long reporterId, Long reportedId, String reason) {
+        if(reporterId.equals(reportedId)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot report yourself");
+        }
         getUserById(reporterId);
         getUserById(reportedId);
         Report report = new Report();
