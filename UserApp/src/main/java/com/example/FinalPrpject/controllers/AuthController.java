@@ -70,9 +70,8 @@ public class AuthController {
         if (!Objects.equals(password, user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
-        Optional<Session> existingSessionOpt = sessionService.findByUserId(user.getId());
-        if (existingSessionOpt.isPresent()) {
-            Session existingSession = existingSessionOpt.get();
+        Session existingSession = sessionService.getSessionByUserId(user.getId()).orElse(null);
+        if (existingSession != null) {
             if (existingSession.getExpiresAt().isAfter(LocalDateTime.now())) {
                 return ResponseEntity.ok("Already logged in. Session ID: " + existingSession.getSessionId());
             } else {
