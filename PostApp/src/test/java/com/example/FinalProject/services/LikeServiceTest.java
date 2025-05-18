@@ -245,14 +245,17 @@ public class LikeServiceTest {
         when(commentRepository.findById("comment123")).thenReturn(Optional.of(testComment));
         when(likeRepository.findByUserIdAndTargetIdAndTargetType("user123", "comment123", "comment"))
             .thenReturn(Optional.empty());
+        when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // Stub post lookup for embedded comment update
+        when(postRepository.findById("post123")).thenReturn(Optional.of(testPost));
+        int initialLikes = testComment.getLikes();
         
         Like commentLike = new Like("user123", "comment123", "comment", true);
         commentLike.setId("like456");
         when(likeRepository.save(any(Like.class))).thenReturn(commentLike);
         
         // Initial counts
-        int initialLikes = testComment.getLikes();
-        
+
         // When
         Like result = likeService.toggleCommentReaction("comment123", "user123", true);
         
@@ -284,15 +287,17 @@ public class LikeServiceTest {
         when(commentRepository.findById("comment123")).thenReturn(Optional.of(testComment));
         when(likeRepository.findByUserIdAndTargetIdAndTargetType("user123", "comment123", "comment"))
             .thenReturn(Optional.of(existingDislike));
-        
+        when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // Stub post lookup for embedded comment update
+        when(postRepository.findById("post123")).thenReturn(Optional.of(testPost));
+        int initialLikes = testComment.getLikes();
+        int initialDislikes = testComment.getDislikes();
         Like toggledLike = new Like("user123", "comment123", "comment", true);
         toggledLike.setId("like456");
         when(likeRepository.save(any(Like.class))).thenReturn(toggledLike);
         
         // Initial counts
-        int initialLikes = testComment.getLikes();
-        int initialDislikes = testComment.getDislikes();
-        
+
         // When
         Like result = likeService.toggleCommentReaction("comment123", "user123", true);
         
