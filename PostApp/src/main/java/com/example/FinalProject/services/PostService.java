@@ -151,8 +151,8 @@ public class PostService {
         createPost(post);
     }
 
-    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
-    public void handleUserNotificationEvent(String message) {
-        logger.info("Received notification : {}", message);
-    }
+//    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
+//    public void handleUserNotificationEvent(String message) {
+//        logger.info("Received notification : {}", message);
+//    }
 }
