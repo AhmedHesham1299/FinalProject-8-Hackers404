@@ -80,7 +80,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
             }
             userService.followUser(userId, targetId);
-            userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(targetId), "followed user " + targetId, "FOLLOW");
+            userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(targetId), "followed you.", "FOLLOW");
             return ResponseEntity.ok("Followed user " + targetId);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
@@ -98,7 +98,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
             }
             userService.unfollowUser(userId, targetId);
-            userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(targetId), "unfollowed user " + targetId, "UNFOLLOW");
+            userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(targetId), "unfollowed you.", "UNFOLLOW");
             return ResponseEntity.ok("Unfollowed user " + targetId);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
@@ -117,7 +117,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
             }
             userService.blockUser(userId, blockedUserId);
-            userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(blockedUserId), "blocked user " + blockedUserId, "BLOCK");
+            userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(blockedUserId), "blocked you.", "BLOCK");
             return ResponseEntity.ok("Blocked user " + blockedUserId);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
@@ -135,7 +135,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
             }
             userService.unBlockUser(userId, blockedUserId);
-            userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(blockedUserId), "unblocked user " + blockedUserId, "UNBLOCK");
+            userProducer.sendNotificationEvent(userService.getUserById(userId), userService.getUserById(blockedUserId), "unblocked you.", "UNBLOCK");
             return ResponseEntity.ok("Unblocked user " + blockedUserId);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
@@ -156,7 +156,7 @@ public class UserController {
             }
             String reason = body.get("reason");
             userService.reportUser(reporterId, reportedId, reason);
-            userProducer.sendNotificationEvent(userService.getUserById(reporterId), userService.getUserById(reportedId), "reported user " + reportedId + " for: " + reason, "REPORT");
+            userProducer.sendNotificationEvent(userService.getUserById(reporterId), userService.getUserById(reportedId), "reported you for: " + reason, "REPORT");
             return ResponseEntity.ok("User " + reportedId + " reported for: " + reason);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());

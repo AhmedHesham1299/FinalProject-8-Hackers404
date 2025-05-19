@@ -8,13 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PushNotificationService {
     public void sendPushNotification(Notification notification) {
-        String DEVICE_TOKEN = "TEST_TOKEN";
+//        String DEVICE_TOKEN = "TEST_TOKEN";
 
-        String content = switch (notification.getContent()) {
-            case "liked" -> "liked your post.";
-            case "commented" -> "commented on your post.";
-            default -> "tagged you in a post.";
-        };
 
 //        Message notificationMessage = Message.builder()
 //                .setToken(DEVICE_TOKEN)
@@ -25,7 +20,7 @@ public class PushNotificationService {
 
         try {
 //            String response = FirebaseMessaging.getInstance().send(notificationMessage);
-            System.out.println("Successfully sent message: " + "User " + notification.getSenderName() + "has " +content);
+            System.out.println("Successfully sent message: " + "User with ID: " + notification.getContent());
         } catch (Exception e) {
             System.out.println("Failed to  send message: " + e.getMessage());
         }
