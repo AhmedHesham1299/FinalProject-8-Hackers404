@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
-
+import com.example.FinalProject.services.TagService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -29,15 +29,17 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final BookmarkRepository bookmarkRepository;
     private final PostEventPublisher postEventPublisher;
+    private final TagService tagService;
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
     public PostService(PostRepository postRepository, CommentRepository commentRepository,
-            BookmarkRepository bookmarkRepository,
-            PostEventPublisher postEventPublisher) {
+                       BookmarkRepository bookmarkRepository,
+                       PostEventPublisher postEventPublisher, TagService tagService) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.bookmarkRepository = bookmarkRepository;
         this.postEventPublisher = postEventPublisher;
+        this.tagService = tagService;
     }
 
     public List<Post> searchPosts(SearchCriteria criteria) {
@@ -54,6 +56,18 @@ public class PostService {
         PostCreatedEvent event = new PostCreatedEvent(UUID.randomUUID().toString(), "POST_CREATED", LocalDateTime.now(),
                 payload);
         postEventPublisher.sendPostCreatedEvent(event);
+        System.out.println("[PostService] Created post: " + saved);
+        System.out.println("[PostService] Post tags: " + saved.getTags());
+        if (saved.getTags() != null && !saved.getTags().isEmpty()) {
+            String authorId = saved.getAuthorId();
+            for (String taggedUserId : saved.getTags()) {
+                if (!taggedUserId.equals(authorId)) {
+                    System.out.println("[PostService] Invoking tagService.tagUserInPost(postId=" + saved.getId()
+                            + ", taggerId=" + authorId + ", taggedUserId=" + taggedUserId + ")");
+                    tagService.tagUserInPost(saved.getId(), authorId, taggedUserId);
+                }
+            }
+        }
         return saved;
     }
 
@@ -137,8 +151,8 @@ public class PostService {
         createPost(post);
     }
 
-//    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
-//    public void handleUserNotificationEvent(String message) {
-//        logger.info("Received notification : {}", message);
-//    }
+    @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
+    public void handleUserNotificationEvent(String message) {
+        logger.info("Received notification : {}", message);
+    }
 }

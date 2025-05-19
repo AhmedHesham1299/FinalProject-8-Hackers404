@@ -7,6 +7,7 @@ import com.example.FinalProject.repositories.BookmarkRepository;
 import com.example.FinalProject.events.PostEventPublisher;
 import com.example.FinalProject.models.Post;
 import com.example.FinalProject.services.PostService;
+import com.example.FinalProject.services.TagService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +35,7 @@ public class PostServiceTest {
     private PostEventPublisher postEventPublisher;
 
     private PostService postService;
-
+    private TagService tagService;
     private SearchCriteria criteriaKeywords;
     private SearchCriteria criteriaTags;
     private SearchCriteria criteriaAuthor;
@@ -50,7 +51,7 @@ public class PostServiceTest {
                 LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31));
         criteriaAll = new SearchCriteria("k", Arrays.asList("t"), "a",
                 LocalDate.now().minusDays(5), LocalDate.now());
-        postService = new PostService(postRepository, commentRepository, bookmarkRepository, postEventPublisher);
+        postService = new PostService(postRepository, commentRepository, bookmarkRepository, postEventPublisher,tagService);
     }
 
     @Test

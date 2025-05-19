@@ -4,6 +4,7 @@ import com.example.FinalProject.criteria.SearchCriteria;
 import com.example.FinalProject.dtos.PostUpdateRequestDto;
 import com.example.FinalProject.events.PostEventPublisher;
 import com.example.FinalProject.events.dtos.PostCreatedEvent;
+import com.example.FinalProject.services.TagService;
 import com.example.FinalProject.events.dtos.PostUpdatedEvent;
 import com.example.FinalProject.models.Comment;
 import com.example.FinalProject.models.Post;
@@ -48,7 +49,7 @@ public class PostServiceCompleteTest {
 
     private Post testPost;
     private SearchCriteria testCriteria;
-
+    private TagService tagService;
     private SearchCriteria criteriaKeywords;
     private SearchCriteria criteriaTags;
     private SearchCriteria criteriaAuthor;
@@ -73,7 +74,7 @@ public class PostServiceCompleteTest {
         Comment comment = new Comment("Test comment", "author123", "post123");
         testPost.setComments(new ArrayList<>(Arrays.asList(comment)));
         testCriteria = criteriaKeywords;
-        postService = new PostService(postRepository, commentRepository, bookmarkRepository, eventPublisher);
+        postService = new PostService(postRepository, commentRepository, bookmarkRepository, eventPublisher,tagService);
     }
 
     @Test
