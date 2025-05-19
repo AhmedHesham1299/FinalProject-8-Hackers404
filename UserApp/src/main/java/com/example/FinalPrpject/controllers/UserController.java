@@ -55,11 +55,10 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         Session existingSession = sessionService.getSessionByUserId(id).orElse(null);
         if(existingSession == null) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
+            return ResponseEntity.badRequest().body(null);
         }else if (existingSession.getExpiresAt().isBefore(LocalDateTime.now())) {
             sessionService.deleteSessionById(existingSession.getSessionId());
             return ResponseEntity.badRequest().body(null);
-
         }
         return ResponseEntity.ok(userService.updateUser(id, updatedUser));
     }
@@ -75,7 +74,7 @@ public class UserController {
         try {
             Session existingSession = sessionService.getSessionByUserId(userId).orElse(null);
             if(existingSession == null) {
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
             }else if (existingSession.getExpiresAt().isBefore(LocalDateTime.now())) {
                 sessionService.deleteSessionById(existingSession.getSessionId());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
@@ -93,7 +92,7 @@ public class UserController {
         try {
             Session existingSession = sessionService.getSessionByUserId(userId).orElse(null);
             if(existingSession == null) {
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
             }else if (existingSession.getExpiresAt().isBefore(LocalDateTime.now())) {
                 sessionService.deleteSessionById(existingSession.getSessionId());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
@@ -112,7 +111,7 @@ public class UserController {
         try {
             Session existingSession = sessionService.getSessionByUserId(userId).orElse(null);
             if(existingSession == null) {
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
             }else if (existingSession.getExpiresAt().isBefore(LocalDateTime.now())) {
                 sessionService.deleteSessionById(existingSession.getSessionId());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
@@ -130,7 +129,7 @@ public class UserController {
         try {
             Session existingSession = sessionService.getSessionByUserId(userId).orElse(null);
             if(existingSession == null) {
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
             }else if (existingSession.getExpiresAt().isBefore(LocalDateTime.now())) {
                 sessionService.deleteSessionById(existingSession.getSessionId());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
@@ -150,7 +149,7 @@ public class UserController {
         try {
             Session existingSession = sessionService.getSessionByUserId(reporterId).orElse(null);
             if(existingSession == null) {
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
             }else if (existingSession.getExpiresAt().isBefore(LocalDateTime.now())) {
                 sessionService.deleteSessionById(existingSession.getSessionId());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
@@ -235,7 +234,7 @@ public class UserController {
         try {
             Session existingSession = sessionService.getSessionByUserId(userId).orElse(null);
             if(existingSession == null) {
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please login first");
             }else if (existingSession.getExpiresAt().isBefore(LocalDateTime.now())) {
                 sessionService.deleteSessionById(existingSession.getSessionId());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired");
