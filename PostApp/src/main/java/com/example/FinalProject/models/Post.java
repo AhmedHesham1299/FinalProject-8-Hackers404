@@ -20,7 +20,6 @@ public class Post {
     private int likes;
     private int dislikes;
 
-    // Public no-arg constructor for Spring Data MongoDB and general use
     public Post() {
         this.tags = new ArrayList<>();
         this.comments = new ArrayList<>();
@@ -45,7 +44,6 @@ public class Post {
         return new PostBuilder(title, content, authorId);
     }
 
-    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -118,7 +116,6 @@ public class Post {
         this.dislikes = dislikes;
     }
 
-    // Static nested PostBuilder class
     public static class PostBuilder {
         private String title;
         private String content;
@@ -163,9 +160,8 @@ public class Post {
             return this;
         }
 
-        // NEW: Fluent setters for likes and dislikes
         public PostBuilder likes(int likes) {
-            if (likes < 0) { // Optional: add validation
+            if (likes < 0) {
                 throw new IllegalArgumentException("Likes cannot be negative");
             }
             this.likes = likes;
@@ -173,7 +169,7 @@ public class Post {
         }
 
         public PostBuilder dislikes(int dislikes) {
-            if (dislikes < 0) { // Optional: add validation
+            if (dislikes < 0) {
                 throw new IllegalArgumentException("Dislikes cannot be negative");
             }
             this.dislikes = dislikes;
@@ -182,7 +178,6 @@ public class Post {
 
         public Post build() {
             LocalDateTime finalCreatedAt = (this.createdAt != null) ? this.createdAt : LocalDateTime.now();
-            // UPDATED: Pass likes and dislikes to the Post constructor
             return new Post(title, content, authorId, tags, finalCreatedAt, comments, likes, dislikes);
         }
     }
