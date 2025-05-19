@@ -3,8 +3,27 @@ services:
     image: rabbitmq:4.0-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5674:5672"
+      - "15674:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    ports:
+      - "27018:27017"
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6378:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+
+volumes:
+  redis_data:
