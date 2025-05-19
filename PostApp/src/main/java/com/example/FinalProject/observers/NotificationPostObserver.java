@@ -42,7 +42,7 @@ public class NotificationPostObserver implements PostObserver {
                         post.getAuthorId(),
                         null,
                         null,
-                        "Your post '" + post.getTitle() + "' has a new comment",
+                        comment.getAuthorId() + " has commented on your post '" + post.getTitle() + "'",
                         "COMMENT",
                         LocalDateTime.now()));
     }
@@ -61,7 +61,7 @@ public class NotificationPostObserver implements PostObserver {
                         post.getAuthorId(),
                         null,
                         null,
-                        "Someone has " + action + " your post '" + post.getTitle() + "'",
+                        like.getUserId() + " has " + action + " your post '" + post.getTitle() + "'",
                         "LIKE",
                         LocalDateTime.now()));
     }
@@ -80,7 +80,7 @@ public class NotificationPostObserver implements PostObserver {
                         comment.getAuthorId(),
                         null,
                         null,
-                        "Someone has " + action + " your comment",
+                        like.getUserId() + " has " + action + " your comment",
                         "LIKE",
                         LocalDateTime.now()));
     }
