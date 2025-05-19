@@ -15,3 +15,15 @@ services:
       POSTGRES_DB: byteforge
     ports:
       - "5433:5432"
+  redis_cache:
+    image: redis:latest
+    container_name: redisCache_sessions
+    ports:
+      - "6379:6379"
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisInsight_sessions
+    ports:
+      - "5540:5540"
+    restart: always
+
